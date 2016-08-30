@@ -1,0 +1,47 @@
+<resources>
+
+    <style name="Theme.NetAngel" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="alertDialogTheme">@style/Dialog</item>
+    </style>
+
+    <style name="Theme.NetAngel.Translucent">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="Dialog" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="EditText" parent="Base.V7.Widget.AppCompat.EditText">
+        <item name="android:layout_width">@dimen/edittext_layout_width</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:lines">1</item>
+        <item name="android:gravity">left</item>
+    </style>
+
+    <style name="Button" parent="Base.Widget.AppCompat.Button">
+        <item name="android:layout_width">@dimen/button_layout_width</item>
+        <item name="android:layout_height">@dimen/button_layout_height</item>
+        <item name="android:background">@drawable/button_background</item>
+        <item name="android:textColor">@drawable/button_text_color</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+    
+    <style name="TextViewHyperlink">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@drawable/textview_hyperlink_text_color</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+</resources>

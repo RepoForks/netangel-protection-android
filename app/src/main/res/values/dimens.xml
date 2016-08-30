@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="edittext_layout_width">250dp</dimen>
+    <dimen name="button_layout_width">250dp</dimen>
+    <dimen name="button_layout_height">40dp</dimen>
+</resources>

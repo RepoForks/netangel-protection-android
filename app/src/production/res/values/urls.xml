@@ -1,0 +1,8 @@
+<resources>
+
+    <string name="BASE_URL">https://dashboard.netangel.com/</string>
+    <string name="URL_SIGN_UP">https://dashboard.netangel.com/users/sign_up</string>
+    <string name="URL_DASHBOARD">https://dashboard.netangel.com</string>
+
+</resources>
+

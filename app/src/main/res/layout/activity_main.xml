@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/img_logo"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/status_off"/>
+
+        <ToggleButton
+            android:id="@+id/toggle_protect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/toggle_selector"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:textOff=""
+            android:textOn=""/>
+
+        <TextView
+            android:id="@+id/txt_device_protected_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/device_not_protected"/>
+
+        <Button
+            android:id="@+id/btn_sign_out"
+            style="@style/Button"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/sign_out"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/manage_this_device_at"/>
+
+        <TextView
+            android:id="@+id/txt_dashboard"
+            style="@style/TextViewHyperlink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/URL_DASHBOARD"/>
+
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>
