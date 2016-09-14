@@ -4,7 +4,7 @@ The NetAngel parental control app is a pornography filter that provides protecti
 
 ## Screenshots
 
-<img alt="NetAngel Screenshot 1" src="https://lh3.googleusercontent.com/12NtxCIPSqVDNQeu8YadNHaUIYQu5q1ru3n-ixji1m2kssdJV7IIMF-zcOmLVhCXhg=h900-rw" width="100px"> <img alt="NetAngel Screenshot 2" src="https://lh3.googleusercontent.com/qR-1cyyxc-_qKyF1KSpR6h7csoyIY85YCxLUXx_dlORN8Zn3B2F3ZLw6ECq8JT3Ynw=h900-rw" width="100px"> <img alt="NetAngel Screenshot 3" src="https://lh3.googleusercontent.com/AaqxG5YFOj1wTosx-akaH_RyOUga4L3_WL6VxuKfRYTVQb5EAhlP060RJFPhZax1N48=h900-rw" width="100px"> <img alt="NetAngel Screenshot 4" src="https://lh3.googleusercontent.com/VVfsyGpMmKiHuotHBJoVtfC7_TewrwubIeW07aW9qlOmaYU2H9HbaZvykR-8UIK75DM=h900-rw" width="100px"> <img alt="NetAngel Screenshot 5" src="https://lh3.googleusercontent.com/a15yNUOLv9Y4whRXJkWCOvmIuGuXgkSPmZuYrnJvaVK9Z0D5uI_7I6dMoyNxKlmM-FA=h900-rw" width="100px">
+<img alt="NetAngel Screenshot 1" src="https://lh3.googleusercontent.com/12NtxCIPSqVDNQeu8YadNHaUIYQu5q1ru3n-ixji1m2kssdJV7IIMF-zcOmLVhCXhg=h900-rw" width="140px"> <img alt="NetAngel Screenshot 2" src="https://lh3.googleusercontent.com/qR-1cyyxc-_qKyF1KSpR6h7csoyIY85YCxLUXx_dlORN8Zn3B2F3ZLw6ECq8JT3Ynw=h900-rw" width="140px"> <img alt="NetAngel Screenshot 3" src="https://lh3.googleusercontent.com/AaqxG5YFOj1wTosx-akaH_RyOUga4L3_WL6VxuKfRYTVQb5EAhlP060RJFPhZax1N48=h900-rw" width="140px"> <img alt="NetAngel Screenshot 4" src="https://lh3.googleusercontent.com/VVfsyGpMmKiHuotHBJoVtfC7_TewrwubIeW07aW9qlOmaYU2H9HbaZvykR-8UIK75DM=h900-rw" width="140px"> <img alt="NetAngel Screenshot 5" src="https://lh3.googleusercontent.com/a15yNUOLv9Y4whRXJkWCOvmIuGuXgkSPmZuYrnJvaVK9Z0D5uI_7I6dMoyNxKlmM-FA=h900-rw" width="140px">
 
 ## Instant Alerts
 
