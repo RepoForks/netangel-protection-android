@@ -55,6 +55,6 @@ In addition to blocking websites based on blacklists that contain over 1.5 milli
 
 We are a group of innovators seeking to make the internet a safer place for the world. We understand the dangers of pornography and want to help people fight back. Our team is comprised of highly successful entrepreneurs and software engineers. But most importantly, we are Dads who want to prepare our children for the world in a safe and controlled manner.
 
-## Download on Goole Play
+## Download on Google Play
 
 https://play.google.com/store/apps/details?id=com.netangel.netangelprotection
