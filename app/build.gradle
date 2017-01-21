@@ -1,16 +1,22 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'com.getkeepsafe.dexcount'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion Integer.parseInt(COMPILE_SDK)
+    buildToolsVersion BUILD_TOOLS_VERSION
 
     defaultConfig {
-        applicationId "com.netangel.netangelprotection"
-        minSdkVersion 19
-        targetSdkVersion 23
-        versionCode 1015
-        versionName "1.0.15"
+        applicationId APPLICATION_ID
+        minSdkVersion Integer.parseInt(project.MIN_SDK)
+        targetSdkVersion Integer.parseInt(TARGET_SDK)
+        versionCode Integer.parseInt(VERSION_CODE)
+        versionName VERSION_NAME
+
+        jackOptions {
+            enabled Boolean.parseBoolean(USE_JACK)
+        }
     }
 
     buildTypes {
@@ -22,28 +28,35 @@ android {
 
     productFlavors {
         development {
-            applicationId "com.netangel.netangelprotection"
+            applicationId APPLICATION_ID
         }
 
         production {
-            applicationId "com.netangel.netangelprotection"
+            applicationId APPLICATION_ID
         }
     }
 }
 
 dependencies {
     compile project(':ics-openvpn')
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:design:24.2.0'
+
     compile 'com.jakewharton:butterknife:8.1.0'
     apt 'com.jakewharton:butterknife-compiler:8.1.0'
+
+    compile "com.android.support:appcompat-v7:${ANDROID_SUPPORT_VERSION}"
+    compile "com.android.support:design:${ANDROID_SUPPORT_VERSION}"
+
+    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.google.code.gson:gson:2.7'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+    compile 'org.apache.commons:commons-lang3:3.4'
+
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.16'
     compile 'com.sromku:simple-storage:1.2.0'
+
+    testCompile 'junit:junit:4.12'
+    testCompile "org.robolectric:robolectric:3.1.1"
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
+    testCompile 'org.mockito:mockito-core:1.10.19'
 }

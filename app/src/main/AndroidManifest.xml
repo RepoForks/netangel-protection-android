@@ -18,8 +18,7 @@
 
         <activity
             android:name=".ui.LoginActivity"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait">
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -28,22 +27,17 @@
 
         <activity
             android:name=".ui.MainActivity"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
+            android:launchMode="singleTop" />
 
         <activity
             android:name=".ui.ConnectVpnActivity"
             android:excludeFromRecents="true"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.NetAngel.Translucent" />
 
-        <service
-            android:name=".service.CheckInService"
-            android:enabled="true"
-            android:exported="false" />
+        <service android:name=".service.CheckInService" />
 
         <receiver android:name=".receiver.BootReceiver">
-            <intent-filter android:priority="999">
+            <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
