@@ -20,15 +20,16 @@ public class SetProtectedTask extends AsyncTask<Boolean, Void, Void> {
     private ResendRunnable resendRunnable;
 
     private Context context;
+    private boolean isProtected;
 
-    public SetProtectedTask(Context context) {
+    public SetProtectedTask(Context context, boolean isProtected) {
         this.context = context;
         this.resendRunnable = new ResendRunnable(context);
+        this.isProtected = isProtected;
     }
 
     @Override
     protected Void doInBackground(Boolean... params) {
-        boolean isProtected = params[0];
         MainHandler.get().removeCallbacks(resendRunnable);
         if (!CommonUtils.isInternetConnected(context)) {
             LogUtils.v(TAG, "No Internet connection");
@@ -89,7 +90,7 @@ public class SetProtectedTask extends AsyncTask<Boolean, Void, Void> {
 
         @Override
         public void run() {
-            new SetProtectedTask(context).execute(isProtected);
+            new SetProtectedTask(context, isProtected).execute();
         }
     }
 }

@@ -52,6 +52,6 @@ public class ProtectionManager {
 
     @VisibleForTesting
     protected void startTask(Context context, boolean isProtected) {
-        new SetProtectedTask(context).execute(isProtected);
+        new SetProtectedTask(context, isProtected).execute();
     }
 }
