@@ -26,6 +26,7 @@ import com.netangel.netangelprotection.R;
 import com.netangel.netangelprotection.async.LoginTask;
 import com.netangel.netangelprotection.util.CommonUtils;
 import com.netangel.netangelprotection.util.Config;
+import com.netangel.netangelprotection.util.ProtectionManager;
 import com.sromku.simple.storage.SimpleStorage;
 import com.sromku.simple.storage.Storage;
 
@@ -116,7 +117,7 @@ public class LoginActivity extends AppCompatActivity implements VpnStatus.StateL
 		} else if (prevLevel == VpnStatus.ConnectionStatus.LEVEL_CONNECTING_SERVER_REPLIED) {
 			if (level == VpnStatus.ConnectionStatus.LEVEL_CONNECTED) {
 				WaitingDialog.dismiss(getSupportFragmentManager());
-				NetAngelApplication.setProtected(this, true);
+				ProtectionManager.getInstance().setProtected(this, true);
 			} else if (level == VpnStatus.ConnectionStatus.LEVEL_AUTH_FAILED || level == VpnStatus.ConnectionStatus.LEVEL_NOTCONNECTED ) {
 				WaitingDialog.dismiss(getSupportFragmentManager());
 				Snackbar.make(edtEmail, R.string.failed_to_connect, Snackbar.LENGTH_LONG).show();
@@ -153,7 +154,7 @@ public class LoginActivity extends AppCompatActivity implements VpnStatus.StateL
 				String email = edtEmail.getText().toString().trim();
 				String password = edtPassword.getText().toString().trim();
 				new LoginTask(this, email, password).execute();
-				progressDialog = ProgressDialog.show(this, "", getString(R.string.please_wait), true);
+				progressDialog = ProgressDialog.show(this, "", getString(R.string.connecting_to_vpn), true);
 			} else {
 				Snackbar.make(edtEmail, R.string.check_internet_connection, Snackbar.LENGTH_LONG).show();
 			}

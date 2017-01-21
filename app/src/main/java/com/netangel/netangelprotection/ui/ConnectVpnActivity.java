@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.netangel.netangelprotection.BuildConfig;
 import com.netangel.netangelprotection.NetAngelApplication;
+import com.netangel.netangelprotection.service.VpnStateService;
 import com.netangel.netangelprotection.util.VpnHelper;
 
 import de.blinkt.openvpn.VpnProfile;
@@ -70,6 +71,8 @@ public class ConnectVpnActivity extends AppCompatActivity {
         if (profile != null) {
             VPNLaunchHelper.startOpenVpn(profile, this);
         }
+
+        VpnStateService.start(this);
         finish();
     }
 

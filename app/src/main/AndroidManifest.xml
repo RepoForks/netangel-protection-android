@@ -35,6 +35,7 @@
             android:theme="@style/Theme.NetAngel.Translucent" />
 
         <service android:name=".service.CheckInService" />
+        <service android:name=".service.VpnStateService" />
 
         <receiver android:name=".receiver.BootReceiver">
             <intent-filter>

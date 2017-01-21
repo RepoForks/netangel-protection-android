@@ -23,8 +23,12 @@ public class WaitingDialog extends AppCompatDialogFragment {
 
     public static void dismiss(@NonNull FragmentManager fm) {
         WaitingDialog dialog = (WaitingDialog) fm.findFragmentByTag(TAG);
-        if (dialog != null) {
+
+        try {
             dialog.dismiss();
+        } catch (IllegalStateException e) {
+            // the user closed out of the activity before the dialog finished.
+            // the dialog will be dismissed when the activity is restarted.
         }
     }
 
@@ -32,7 +36,7 @@ public class WaitingDialog extends AppCompatDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         ProgressDialog dialog = new ProgressDialog(getContext());
-        dialog.setMessage(getString(R.string.please_wait));
+        dialog.setMessage(getString(R.string.connecting_to_vpn));
         return dialog;
     }
 }
