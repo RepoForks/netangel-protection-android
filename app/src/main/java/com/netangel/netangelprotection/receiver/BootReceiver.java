@@ -18,10 +18,10 @@ public class BootReceiver extends BroadcastReceiver {
         String action = intent.getAction();
         if ((Intent.ACTION_BOOT_COMPLETED.equals(action) || Intent.ACTION_MY_PACKAGE_REPLACED.equals(action))
                 && Config.getBoolean(context, Config.STATUS_PROTECTED, false)) {
-			VpnProfile profile = VpnHelper.getProfile();
+			VpnProfile profile = new VpnHelper(context).getProfile();
             if (profile != null) {
                 launchVPN(context, profile);
-                CheckInService.start();
+                CheckInService.start(context);
             }
         }
     }

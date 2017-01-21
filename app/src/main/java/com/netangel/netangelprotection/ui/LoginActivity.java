@@ -88,7 +88,7 @@ public class LoginActivity extends AppCompatActivity implements VpnStatus.StateL
 			boolean isSwitchOn = Config.getBoolean(this, Config.IS_SWITCH_ON, false);
 			boolean isProtected = Config.getBoolean(this, Config.STATUS_PROTECTED, false);
 			if (isSwitchOn && !isProtected) {
-				ConnectVpnActivity.start(false);
+				ConnectVpnActivity.start(this, false);
 			}
 		}
 	}
@@ -116,7 +116,7 @@ public class LoginActivity extends AppCompatActivity implements VpnStatus.StateL
 		} else if (prevLevel == VpnStatus.ConnectionStatus.LEVEL_CONNECTING_SERVER_REPLIED) {
 			if (level == VpnStatus.ConnectionStatus.LEVEL_CONNECTED) {
 				WaitingDialog.dismiss(getSupportFragmentManager());
-				NetAngelApplication.setProtected(true);
+				NetAngelApplication.setProtected(this, true);
 			} else if (level == VpnStatus.ConnectionStatus.LEVEL_AUTH_FAILED || level == VpnStatus.ConnectionStatus.LEVEL_NOTCONNECTED ) {
 				WaitingDialog.dismiss(getSupportFragmentManager());
 				Snackbar.make(edtEmail, R.string.failed_to_connect, Snackbar.LENGTH_LONG).show();
@@ -149,7 +149,7 @@ public class LoginActivity extends AppCompatActivity implements VpnStatus.StateL
 	@OnClick(R.id.btn_sign_in)
 	public void onClickSignIn() {
 		if (validateInput()) {
-			if (CommonUtils.isInternetConnected()) {
+			if (CommonUtils.isInternetConnected(this)) {
 				String email = edtEmail.getText().toString().trim();
 				String password = edtPassword.getText().toString().trim();
 				new LoginTask(this, email, password).execute();

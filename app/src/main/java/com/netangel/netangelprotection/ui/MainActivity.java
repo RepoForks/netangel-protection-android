@@ -194,9 +194,9 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 	}
 
 	private void connectVpn() {
-		if (CommonUtils.isInternetConnected()) {
+		if (CommonUtils.isInternetConnected(this)) {
 			ignoreUserLeaveHint = true;
-			ConnectVpnActivity.start(false);
+			ConnectVpnActivity.start(this, false);
 		} else {
 			Snackbar.make(switchProtect, R.string.check_internet_connection, Snackbar.LENGTH_LONG).show();
 			updateUI();
@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
                 service.getManagement().stopVPN(false);
             }
 			NetAngelApplication.setDisconnectedByApp(true);
-			NetAngelApplication.setProtected(false);
+			NetAngelApplication.setProtected(this, false);
 			updateUI();
 		}
 	}
@@ -257,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 		} else if (prevLevel == ConnectionStatus.LEVEL_CONNECTING_SERVER_REPLIED) {
 			if (level == ConnectionStatus.LEVEL_CONNECTED) {
 				WaitingDialog.dismiss(getSupportFragmentManager());
-				NetAngelApplication.setProtected(true);
+				NetAngelApplication.setProtected(this, true);
 				Config.saveBoolean(this, Config.IS_SWITCH_ON, true);
 				/*Intent i = new Intent(android.provider.Settings.ACTION_BATTERY_SAVER_SETTINGS);
 				if (i.resolveActivity(getPackageManager()) != null) {

@@ -1,5 +1,7 @@
 package com.netangel.netangelprotection.restful;
 
+import android.content.Context;
+
 import com.netangel.netangelprotection.BuildConfig;
 import com.netangel.netangelprotection.NetAngelApplication;
 import com.netangel.netangelprotection.R;
@@ -37,18 +39,22 @@ public class RestfulApi {
 
 	public static RestfulApi instance;
 
+	private Context context;
 	private RestService restService;
-	private static Retrofit retrofit;
+	private Retrofit retrofit;
 
-	public static RestfulApi getInstance() {
+	public static RestfulApi getInstance(Context context) {
 		if (instance == null) {
-			instance = new RestfulApi();
+			instance = new RestfulApi(context);
 		}
+
 		return instance;
 	}
 
-	private RestfulApi() {
-		String baseUrl = NetAngelApplication.getAppContext().getString(R.string.BASE_URL);
+	private RestfulApi(Context context) {
+		this.context = context;
+
+		String baseUrl = context.getString(R.string.BASE_URL);
 		HttpLoggingInterceptor hli = new HttpLoggingInterceptor();
 		hli.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
 		OkHttpClient client = new OkHttpClient.Builder()
@@ -57,27 +63,23 @@ public class RestfulApi {
 				.writeTimeout(30, TimeUnit.SECONDS)
 				.addInterceptor(hli)
 				.build();
+
 		retrofit = new Retrofit.Builder()
 				.baseUrl(baseUrl)
 				.client(client)
 				.addConverterFactory(GsonConverterFactory.create())
 				.build();
+
 		restService = retrofit.create(RestService.class);
 	}
 
-	public static Retrofit getRetrofit() {
-		return retrofit;
-	}
-
 	public Call<ResponseBody> login(String email, String password) {
-
 		String credential = Credentials.basic(email, password);
 		return login(credential);
 	}
 
 	public Call<ResponseBody> login(String credential) {
-
-		String clientId = Config.getString(NetAngelApplication.getAppContext(), Config.CLIENT_ID);
+		String clientId = Config.getString(context, Config.CLIENT_ID);
 
 		HashMap<String, String> args = new HashMap<>();
 		args.put(CLIENT_ID, clientId);
@@ -92,32 +94,32 @@ public class RestfulApi {
 	}
 
 	public Call<Boolean> isVpnUserCreated() {
-		String clientId = Config.getString(NetAngelApplication.getAppContext(), Config.CLIENT_ID);
-		String authorization = Auth.generateHeader("GET", "/api/v1/devices/" + clientId + "/vpn_user_created");
+		String clientId = Config.getString(context, Config.CLIENT_ID);
+		String authorization = Auth.generateHeader(context, "GET", "/api/v1/devices/" + clientId + "/vpn_user_created");
 		return restService.isVpnUserCreated(authorization, clientId);
 	}
 
 	public Call<ResponseBody> downloadOvpnFile() {
-		String clientId = Config.getString(NetAngelApplication.getAppContext(), Config.CLIENT_ID);
-		String authorization = Auth.generateHeader("GET", "/api/v1/devices/" + clientId + "/download_ovpn");
+		String clientId = Config.getString(context, Config.CLIENT_ID);
+		String authorization = Auth.generateHeader(context, "GET", "/api/v1/devices/" + clientId + "/download_ovpn");
 		return restService.downloadOvpnFile(authorization, clientId);
 	}
 
 	public Call<CheckInResult> checkIn() {
-		String clientId = Config.getString(NetAngelApplication.getAppContext(), Config.CLIENT_ID);
-		String credential = Auth.generateHeader("POST", "/api/v1/devices/" + clientId + "/check_in");
+		String clientId = Config.getString(context, Config.CLIENT_ID);
+		String credential = Auth.generateHeader(context, "POST", "/api/v1/devices/" + clientId + "/check_in");
 		return restService.checkIn(credential, clientId);
 	}
 
 	public Call<ResponseBody> setProtected() {
-		String clientId = Config.getString(NetAngelApplication.getAppContext(), Config.CLIENT_ID);
-		String authorization = Auth.generateHeader("POST", "/api/v1/devices/" + clientId + "/protected");
+		String clientId = Config.getString(context, Config.CLIENT_ID);
+		String authorization = Auth.generateHeader(context, "POST", "/api/v1/devices/" + clientId + "/protected");
 		return restService.setProtected(authorization, clientId);
 	}
 
 	public Call<ResponseBody> setUnprotected() {
-		String clientId = Config.getString(NetAngelApplication.getAppContext(), Config.CLIENT_ID);
-		String authorization = Auth.generateHeader("POST", "/api/v1/devices/" + clientId + "/unprotected");
+		String clientId = Config.getString(context, Config.CLIENT_ID);
+		String authorization = Auth.generateHeader(context, "POST", "/api/v1/devices/" + clientId + "/unprotected");
 		return restService.setUnprotected(authorization, clientId);
 	}
 

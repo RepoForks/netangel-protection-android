@@ -20,8 +20,7 @@ public class ConnectVpnActivity extends AppCompatActivity {
 
     private boolean forceConfirm;
 
-    public static void start(boolean forceConfirm) {
-        Context context = NetAngelApplication.getAppContext();
+    public static void start(Context context, boolean forceConfirm) {
         Intent intent = new Intent(context, ConnectVpnActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(EXTRA_FORCE_CONFIRM, forceConfirm);
@@ -38,7 +37,7 @@ public class ConnectVpnActivity extends AppCompatActivity {
     }
 
     private void launchVpn() {
-        Intent intent = VpnHelper.prepareVpnService();
+        Intent intent = new VpnHelper(this).prepareVpnService();
         if (intent != null) {
             VpnStatus.updateStateString("USER_VPN_PERMISSION", "",
                     de.blinkt.openvpn.R.string.state_user_vpn_permission,
@@ -67,7 +66,7 @@ public class ConnectVpnActivity extends AppCompatActivity {
     }
 
     private void onVpnConfirmed() {
-        VpnProfile profile = VpnHelper.getProfile();
+        VpnProfile profile = new VpnHelper(this).getProfile();
         if (profile != null) {
             VPNLaunchHelper.startOpenVpn(profile, this);
         }

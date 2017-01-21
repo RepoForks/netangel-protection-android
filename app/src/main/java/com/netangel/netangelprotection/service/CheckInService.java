@@ -22,7 +22,7 @@ public class CheckInService extends Service {
 	{
 		runnable = new Runnable() {
 			public void run() {
-				new CheckInTask().execute();
+				new CheckInTask(CheckInService.this).execute();
 				handler.postDelayed(runnable, INTERVAL);
 			}
 		};
@@ -31,14 +31,12 @@ public class CheckInService extends Service {
 	public CheckInService() {
 	}
 
-	public static void start() {
-		Context context = NetAngelApplication.getAppContext();
+	public static void start(Context context) {
 		Intent i = new Intent(context, CheckInService.class);
 		context.startService(i);
 	}
 
-	public static void stop() {
-		Context context = NetAngelApplication.getAppContext();
+	public static void stop(Context context) {
 		Intent i = new Intent(context, CheckInService.class);
 		i.setAction(CheckInService.OFF);
 		context.startService(i);

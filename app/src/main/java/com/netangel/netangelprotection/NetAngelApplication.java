@@ -15,14 +15,11 @@ import de.blinkt.openvpn.core.VpnStatus;
 import de.blinkt.openvpn.core.VpnStatus.ConnectionStatus;
 
 public class NetAngelApplication extends Application implements VpnStatus.StateListener {
-    @SuppressLint("StaticFieldLeak")
-    private static Context context;
     private static boolean isDisconnectedByApp;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        context = getApplicationContext();
 
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
@@ -41,13 +38,8 @@ public class NetAngelApplication extends Application implements VpnStatus.StateL
         VpnStatus.addStateListener(this);
 
         if (Config.getBoolean(this, Config.STATUS_PROTECTED, false)) {
-            ConnectVpnActivity.start(true);
+            ConnectVpnActivity.start(this, true);
         }
-    }
-
-    @NonNull
-    public static Context getAppContext() {
-        return context;
     }
 
     @Override
@@ -55,25 +47,25 @@ public class NetAngelApplication extends Application implements VpnStatus.StateL
                             ConnectionStatus level, ConnectionStatus prevLevel) {
         if (prevLevel == ConnectionStatus.LEVEL_CONNECTING_SERVER_REPLIED
                 && level == ConnectionStatus.LEVEL_CONNECTED) {
-            setProtected(true);
+            setProtected(this, true);
         } else if (prevLevel == ConnectionStatus.LEVEL_CONNECTED
                 && level == ConnectionStatus.LEVEL_NOTCONNECTED) {
-            setProtected(false);
+            setProtected(this, false);
             if (isDisconnectedByApp) {
                 isDisconnectedByApp = false;
             } else if (Config.getBoolean(this, Config.ENABLE_VPN, true)) {
                 // Automatically reconnect to VPN if disconnected outside of the app.
-                ConnectVpnActivity.start(true);
+                ConnectVpnActivity.start(this, true);
             }
         } else if (level == ConnectionStatus.LEVEL_NONETWORK) {
-            setProtected(false);
+            setProtected(this, false);
         }
     }
 
-    public static void setProtected(boolean isProtected) {
+    public static void setProtected(Context context, boolean isProtected) {
         if (isProtected != Config.getBoolean(context, Config.STATUS_PROTECTED, false)) {
             Config.saveBoolean(context, Config.STATUS_PROTECTED, isProtected);
-            new SetProtectedTask().execute(isProtected);
+            new SetProtectedTask(context).execute(isProtected);
         }
     }
 
