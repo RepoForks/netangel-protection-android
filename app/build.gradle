@@ -27,11 +27,11 @@ android {
     }
 
     productFlavors {
-        development {
+        dev {
             applicationId APPLICATION_ID
         }
 
-        production {
+        prod {
             applicationId APPLICATION_ID
         }
     }
