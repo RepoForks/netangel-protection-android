@@ -11,6 +11,7 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.PowerManager;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Display;
 
@@ -43,27 +44,26 @@ public class CheckInService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		RestfulApi api = RestfulApi.getInstance(this);
+		RestfulApi api = getApi();
 		Call<CheckInResult> call = api.checkIn();
 
 		try {
-			Response<CheckInResult> response = call.execute();
-			if (response.isSuccessful()) {
-				CheckInResult result = response.body();
+			ResponseWrapper wrapper = execute(call);
+			if (wrapper.isSuccessful) {
+				CheckInResult result = wrapper.body;
 				if (result != null && result.hasPendingChanges() && result.getChanges() != null) {
 
 					boolean isBatterySaverOn = result.getChanges().isBatterySaver();
-					Config.saveBoolean(this, Config.BATTERY_SAVER, isBatterySaverOn);
+					saveBoolean(Config.BATTERY_SAVER, isBatterySaverOn);
 
 					boolean isEnableVpn = result.getChanges().isEnableVpn();
-					Config.saveBoolean(this, Config.ENABLE_VPN, isEnableVpn);
-					Config.saveBoolean(this, Config.IS_SWITCH_ON, isEnableVpn);
+					saveBoolean(Config.ENABLE_VPN, isEnableVpn);
+					saveBoolean(Config.IS_SWITCH_ON, isEnableVpn);
 
 					boolean isPauseVpn = result.getChanges().isPauseVpn();
-					Config.saveBoolean(this, Config.PAUSE_VPN, isPauseVpn);
+					saveBoolean(Config.PAUSE_VPN, isPauseVpn);
 
-					Intent i = new Intent("onVpnConfigurationChanged");
-					LocalBroadcastManager.getInstance(this).sendBroadcast(i);
+					sendBroadcast("onVpnConfigurationChanged");
 				}
 			}
 
@@ -74,7 +74,29 @@ public class CheckInService extends IntentService {
 		scheduleNextRun(this, REGULAR_INTERVAL);
 	}
 
-	private static void scheduleNextRun(Context context, long timeout) {
+	@VisibleForTesting
+	protected ResponseWrapper execute(Call<CheckInResult> call) throws IOException {
+		return new ResponseWrapper(call.execute());
+	}
+
+	@VisibleForTesting
+	protected RestfulApi getApi() {
+		return RestfulApi.getInstance(this);
+	}
+
+	@VisibleForTesting
+	protected void saveBoolean(String id, boolean value) {
+		Config.saveBoolean(this, id, value);
+	}
+
+	@VisibleForTesting
+	protected void sendBroadcast(String value) {
+		Intent i = new Intent(value);
+		LocalBroadcastManager.getInstance(this).sendBroadcast(i);
+	}
+
+	@VisibleForTesting
+	protected static void scheduleNextRun(Context context, long timeout) {
 		Intent intent = new Intent(context, CheckInService.class);
 		PendingIntent pIntent = PendingIntent.getService(context, REQUEST_CODE, intent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
@@ -90,6 +112,16 @@ public class CheckInService extends IntentService {
 		long runTime = current + timeout;
 
 		alarmManager.setExact(AlarmManager.RTC_WAKEUP, runTime, pIntent);
+	}
+
+	protected static class ResponseWrapper {
+		boolean isSuccessful;
+		CheckInResult body;
+
+		ResponseWrapper(Response<CheckInResult> response) {
+			this.isSuccessful = response.isSuccessful();
+			this.body = response.body();
+		}
 	}
 
 }
