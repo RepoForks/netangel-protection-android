@@ -43,21 +43,8 @@ public class CheckInService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-		boolean isBatterySaverOn = Config.getBoolean(this, Config.BATTERY_SAVER, false);
-
 		RestfulApi api = RestfulApi.getInstance(this);
 		Call<CheckInResult> call = api.checkIn();
-
-		if (!isScreenOn(this) && isBatterySaverOn) {
-			wifi.setWifiEnabled(true);
-		}
-
-		// Wait for Wifi to turn on
-		for (int i = 0; i < Integer.MAX_VALUE; i++) {
-			if (isNetworkAvailable(this))
-				break;
-		}
 
 		try {
 			Response<CheckInResult> response = call.execute();
@@ -65,7 +52,7 @@ public class CheckInService extends IntentService {
 				CheckInResult result = response.body();
 				if (result != null && result.hasPendingChanges() && result.getChanges() != null) {
 
-					isBatterySaverOn = result.getChanges().isBatterySaver();
+					boolean isBatterySaverOn = result.getChanges().isBatterySaver();
 					Config.saveBoolean(this, Config.BATTERY_SAVER, isBatterySaverOn);
 
 					boolean isEnableVpn = result.getChanges().isEnableVpn();
@@ -84,35 +71,7 @@ public class CheckInService extends IntentService {
 			e.printStackTrace();
 		}
 
-		if (!isScreenOn(this) && isBatterySaverOn) {
-			wifi.setWifiEnabled(false);
-		}
-
 		scheduleNextRun(this, REGULAR_INTERVAL);
-	}
-
-	private boolean isNetworkAvailable(Context context) {
-		ConnectivityManager connectivityManager
-				= (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-	}
-
-	public boolean isScreenOn(Context context) {
-		if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-			DisplayManager dm = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
-			boolean screenOn = false;
-			for (Display display : dm.getDisplays()) {
-				if (display.getState() != Display.STATE_OFF) {
-					screenOn = true;
-				}
-			}
-			return screenOn;
-		} else {
-			PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-			//noinspection deprecation
-			return pm.isScreenOn();
-		}
 	}
 
 	private static void scheduleNextRun(Context context, long timeout) {
