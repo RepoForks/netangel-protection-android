@@ -38,10 +38,17 @@
             android:text="@string/device_not_protected"/>
 
         <Button
+            android:id="@+id/btn_prevent_uninstall"
+            style="@style/Button"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="5dp"
+            android:text="@string/prevent_uninstall"/>
+
+        <Button
             android:id="@+id/btn_sign_out"
             style="@style/Button"
+            android:layout_marginTop="5dp"
             android:layout_marginBottom="20dp"
-            android:layout_marginTop="20dp"
             android:text="@string/sign_out"/>
 
         <TextView

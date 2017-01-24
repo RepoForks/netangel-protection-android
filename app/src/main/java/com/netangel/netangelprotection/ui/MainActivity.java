@@ -1,8 +1,10 @@
 package com.netangel.netangelprotection.ui;
 
+import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -13,15 +15,19 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.netangel.netangelprotection.NetAngelApplication;
 import com.netangel.netangelprotection.R;
 import com.netangel.netangelprotection.async.LogoutTask;
+import com.netangel.netangelprotection.receiver.DeviceAdminRequestReceiver;
 import com.netangel.netangelprotection.service.VpnStateService;
 import com.netangel.netangelprotection.util.CommonUtils;
 import com.netangel.netangelprotection.util.Config;
@@ -53,6 +59,9 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 
 	@BindView(R.id.toggle_protect)
 	ToggleButton switchProtect;
+
+	@BindView(R.id.btn_prevent_uninstall)
+	Button preventUninstall;
 
 	private OpenVPNService service;
 	private ProtectionManager protectionManager;
@@ -185,6 +194,17 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 			imgLogo.setImageResource(R.drawable.status_off);
 			txtDeviceProtectedStatus.setText(R.string.device_not_protected);
 		}
+
+		updateDeviceAdmin(preventUninstall);
+	}
+
+	@VisibleForTesting
+	protected void updateDeviceAdmin(TextView tv) {
+		if (isDeviceAdmin()) {
+			tv.setText(R.string.allow_uninstall);
+		} else {
+			tv.setText(R.string.prevent_uninstall);
+		}
 	}
 
 	@OnClick(R.id.toggle_protect)
@@ -284,6 +304,32 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 		updateUI();
 	}
 
+	@OnClick(R.id.btn_prevent_uninstall)
+	public void onClickPreventUninstall() {
+		if (!isDeviceAdmin()) {
+			new AlertDialog.Builder(this)
+					.setTitle(R.string.device_admin)
+					.setMessage(R.string.device_admin_dialog_message)
+					.setPositiveButton(R.string.enable, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							startDeviceAdmin(MainActivity.this);
+						}
+					})
+					.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+						@Override public void onClick(DialogInterface dialog, int which) { }
+					})
+					.create()
+					.show();
+		} else {
+			ComponentName devAdminReceiver = new ComponentName(this, DeviceAdminRequestReceiver.class);
+			DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+			dpm.removeActiveAdmin(devAdminReceiver);
+
+			preventUninstall.setText(R.string.prevent_uninstall);
+		}
+	}
+
 	@OnClick(R.id.btn_sign_out)
 	public void onClickSignOut() {
 		new LogoutTask().execute();
@@ -296,5 +342,20 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 		String url = getString(R.string.URL_DASHBOARD);
 		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 		startActivity(browserIntent);
+	}
+
+	@VisibleForTesting
+	protected void startDeviceAdmin(Context context) {
+		Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+		intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN,
+				new ComponentName(MainActivity.this, DeviceAdminRequestReceiver.class));
+		intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+				getString(R.string.device_admin_description));
+
+		context.startActivity(intent);
+	}
+
+	public boolean isDeviceAdmin() {
+		return Config.getBoolean(this, Config.IS_DEVICE_ADMIN, false);
 	}
 }

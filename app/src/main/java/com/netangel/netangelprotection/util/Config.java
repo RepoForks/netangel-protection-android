@@ -22,6 +22,7 @@ public final class Config {
 	public static final String BATTERY_SAVER = "battery_saver";
 	public static final String ENABLE_VPN = "enable_vpn";
 	public static final String PAUSE_VPN = "pause_vpn";
+	public static final String IS_DEVICE_ADMIN = "is_device_administrator";
 
 	/**
 	 * The name of SharedPreferences
