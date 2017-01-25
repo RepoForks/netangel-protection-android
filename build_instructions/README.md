@@ -31,12 +31,33 @@ This will build the app and send it to your device for testing.
 2. From the command line, inside the project, execute `$ ./gradle assembleProdDebug`.
 3. This will generate a `.apk` file that you can copy to, and install on your device. The `.apk` will be `app/build/outputs/apk/app-prod-debug.apk`.
 
-### Building a Play Store ready version
+## Building a Play Store ready version
 
-The signing configuration and keystore file, used on the release version of the app, should not be uploaded to this repo, but if you have them locally, you can build a release-ready version of the app with:
+The signing configuration and keystore file, used on the release version of the app, should not be checked in to this repository, but if you have them locally, you can build a release-ready version of the app with:
 
 ```
 $ ./gradle assembleProdRelease
 ```
 
 The output file will be `app/build/outputs/apk/app-prod-release.apk`. This file can be uploaded to the Play Store.
+
+#### Applying the signing configuration
+
+The app is set up to be able to build both release and debug builds, without having to go in and remove your signing configuration, or worry about accidentally checking harmful files into the open-source repository.
+
+To set up the signing config for a release build, on a local machine, or on a CI server:
+
+1. Copy the `keystore.jks` to the root of the project directory. Note that it will not be added to the repo, because it is ignored with `*.jks`, within the `.gitignore`.
+2. Create a new file, named `keystore.properties` in the root of the project directory, and copy the contents of `keystore.properties.example` into the `keystore.properties` file.
+3. Replace the `<insert...>` sections with the signing configuration that is used on the keystore.
+
+The final `keystore.properties` will look something like:
+
+```
+keystorefile=keystore.jks
+keystorepassword=dummy_password
+keyalias=my_key_alias
+keypassword=another_dummy_password
+```
+
+Once that is set up, you should be able to generate the `app-prod-release.apk` file, as described above.
