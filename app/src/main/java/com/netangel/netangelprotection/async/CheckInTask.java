@@ -22,29 +22,29 @@ import java.io.IOException;
 import retrofit2.Call;
 import retrofit2.Response;
 
-/**
- * Created by DuyTran on 6/21/2016.
- */
 public class CheckInTask extends AsyncTask<Void, Void, Void> {
 
-	public CheckInTask() {}
+	private Context context;
+
+	public CheckInTask(Context context) {
+		this.context = context;
+	}
 
 	@Override
 	protected Void doInBackground(Void... params) {
-		Context c = NetAngelApplication.getAppContext();
-		WifiManager wifi = (WifiManager) c.getSystemService(Context.WIFI_SERVICE);
-		boolean isBatterySaverOn = Config.getBoolean(c, Config.BATTERY_SAVER, false);
+		WifiManager wifi = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+		boolean isBatterySaverOn = Config.getBoolean(context, Config.BATTERY_SAVER, false);
 
-		RestfulApi api = RestfulApi.getInstance();
+		RestfulApi api = RestfulApi.getInstance(context);
 		Call<CheckInResult> call = api.checkIn();
 
-		if (!isScreenOn(c) && isBatterySaverOn) {
+		if (!isScreenOn(context) && isBatterySaverOn) {
 			wifi.setWifiEnabled(true);
 		}
 
 		// Wait for Wifi to turn on
 		for (int i = 0; i < Integer.MAX_VALUE; i++) {
-			if (isNetworkAvailable(c))
+			if (isNetworkAvailable(context))
 				break;
 		}
 
@@ -56,17 +56,17 @@ public class CheckInTask extends AsyncTask<Void, Void, Void> {
 				if (result != null && result.hasPendingChanges() && result.getChanges() != null) {
 
                     isBatterySaverOn = result.getChanges().isBatterySaver();
-                    Config.saveBoolean(c, Config.BATTERY_SAVER, isBatterySaverOn);
+                    Config.saveBoolean(context, Config.BATTERY_SAVER, isBatterySaverOn);
 
                     boolean isEnableVpn = result.getChanges().isEnableVpn();
-                    Config.saveBoolean(c, Config.ENABLE_VPN, isEnableVpn);
-                    Config.saveBoolean(c, Config.IS_SWITCH_ON, isEnableVpn);
+                    Config.saveBoolean(context, Config.ENABLE_VPN, isEnableVpn);
+                    Config.saveBoolean(context, Config.IS_SWITCH_ON, isEnableVpn);
 
                     boolean isPauseVpn = result.getChanges().isPauseVpn();
-                    Config.saveBoolean(c, Config.PAUSE_VPN, isPauseVpn);
+                    Config.saveBoolean(context, Config.PAUSE_VPN, isPauseVpn);
 
                     Intent i = new Intent("onVpnConfigurationChanged");
-                    LocalBroadcastManager.getInstance(c).sendBroadcast(i);
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(i);
                 }
 			}
 
@@ -74,7 +74,7 @@ public class CheckInTask extends AsyncTask<Void, Void, Void> {
 			e.printStackTrace();
 		}
 
-		if (!isScreenOn(c) && isBatterySaverOn) {
+		if (!isScreenOn(context) && isBatterySaverOn) {
 			wifi.setWifiEnabled(false);
 		}
 

@@ -18,10 +18,9 @@ public final class Auth {
 
 	private Auth() {}
 
-	public static String generateHeader(String method, String path) {
-		Context c = NetAngelApplication.getAppContext();
-		String secretToken = Config.getString(c, Config.SECRET_TOKEN);
-		String certificate = Config.getString(c, Config.SSL_CERT);
+	public static String generateHeader(Context context, String method, String path) {
+		String secretToken = Config.getString(context, Config.SECRET_TOKEN);
+		String certificate = Config.getString(context, Config.SSL_CERT);
 		return generateHeader(certificate, secretToken, method, path);
 	}
 

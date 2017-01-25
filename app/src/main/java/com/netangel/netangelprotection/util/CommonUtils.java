@@ -23,8 +23,8 @@ public class CommonUtils {
         }
     }
 
-    public static boolean isInternetConnected() {
-        ConnectivityManager cm = (ConnectivityManager) NetAngelApplication.getAppContext()
+    public static boolean isInternetConnected(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
         return ni != null && ni.isConnected();

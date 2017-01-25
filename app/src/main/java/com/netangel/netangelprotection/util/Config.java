@@ -105,7 +105,7 @@ public final class Config {
 	 * 
 	 * @param context
 	 * @param key
-	 * @param defFlag
+	 * @param defaultValue
 	 * @return
 	 */
 	public static boolean getBoolean(Context context, String key, boolean defaultValue) {

@@ -25,25 +25,29 @@ import okhttp3.Headers;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class LoginTask extends AsyncTask<Void, Void, Boolean> {
 	private static final String TAG = LoginTask.class.getSimpleName();
 	private static final String OVPN_FILE_NAME = "profile.ovpn";
 
+	private final RestfulApi api;
+	private final Context context;
 	private final WeakReference<LoginActivity> loginActivityRef;
 	private final String credential;
+
+	public LoginTask(@NonNull LoginActivity activity, String email, String password) {
+		this(activity, Credentials.basic(email, password));
+	}
 
 	/*
 	 * Login with last known credential
 	 */
-	public LoginTask(@NonNull LoginActivity activity, String credential) {
-		loginActivityRef = new WeakReference<>(activity);
+	private LoginTask(@NonNull LoginActivity activity, String credential) {
+		this.context = activity;
+		this.api = RestfulApi.getInstance(activity);
+		this.loginActivityRef = new WeakReference<>(activity);
 		this.credential = credential;
-	}
-
-	public LoginTask(@NonNull LoginActivity activity, String email, String password) {
-		loginActivityRef = new WeakReference<>(activity);
-		this.credential = Credentials.basic(email, password);
 	}
 
 	@Override
@@ -51,7 +55,8 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
 		if (!login(credential)) {
 			return false;
 		}
-		if (!Config.getBoolean(NetAngelApplication.getAppContext(), Config.IS_VPN_PROFILE_IMPORTED, false)) {
+
+		if (!Config.getBoolean(context, Config.IS_VPN_PROFILE_IMPORTED, false)) {
 			if (!waitForVpnUser()) {
                 return false;
             }
@@ -61,13 +66,14 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
 			if (!importVpnProfile()) {
                 return false;
             }
-			Config.saveBoolean(NetAngelApplication.getAppContext(), Config.IS_VPN_PROFILE_IMPORTED, true);
+			Config.saveBoolean(context, Config.IS_VPN_PROFILE_IMPORTED, true);
 		}
+
 		return true;
 	}
 
-	private static boolean login(@NonNull String credential) {
-		Call<ResponseBody> call = RestfulApi.getInstance().login(credential);
+	private boolean login(@NonNull String credential) {
+		Call<ResponseBody> call = api.login(credential);
 		try {
 			Response<ResponseBody> response = call.execute();
 			if (response.isSuccessful()) {
@@ -80,29 +86,28 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
 		return false;
 	}
 
-	private static void saveAuthInfo(@NonNull Headers headers, String credential) {
-		Context c = NetAngelApplication.getAppContext();
+	private void saveAuthInfo(@NonNull Headers headers, String credential) {
 		String sslCert = headers.get("X-Ssl-Cert");
 		if (!TextUtils.isEmpty(sslCert)) {
-			Config.saveString(c, Config.SSL_CERT, sslCert);
+			Config.saveString(context, Config.SSL_CERT, sslCert);
 		}
 
 		String secretToken = headers.get("X-Secret-Token");
 		if (!TextUtils.isEmpty(secretToken)) {
-			Config.saveString(c, Config.SECRET_TOKEN, secretToken);
+			Config.saveString(context, Config.SECRET_TOKEN, secretToken);
 		}
 
 		String clientId = headers.get("X-Client-Id");
 		if (!TextUtils.isEmpty(clientId)) {
-			Config.saveString(c, Config.CLIENT_ID, clientId);
+			Config.saveString(context, Config.CLIENT_ID, clientId);
 		}
 
 //		Config.saveString(c, Config.CREDENTIAL, credential);
 	}
 
-	private static boolean waitForVpnUser() {
+	private boolean waitForVpnUser() {
 		while (true) {
-			Call<Boolean> call = RestfulApi.getInstance().isVpnUserCreated();
+			Call<Boolean> call = api.isVpnUserCreated();
 			try {
 				Response<Boolean> response = call.execute();
 				if (response.isSuccessful()) {
@@ -119,8 +124,8 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
 		}
 	}
 
-	private static boolean downloadOvpnFile() {
-		Call<ResponseBody> call = RestfulApi.getInstance().downloadOvpnFile();
+	private boolean downloadOvpnFile() {
+		Call<ResponseBody> call = api.downloadOvpnFile();
 		try {
 			Response<ResponseBody> response = call.execute();
 			if (response.isSuccessful()) {
@@ -132,11 +137,11 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
 		return false;
 	}
 
-	private static boolean saveOvpnFile(@NonNull ResponseBody body) {
+	private boolean saveOvpnFile(@NonNull ResponseBody body) {
 		InputStream inputStream = null;
 		OutputStream outputStream = null;
 		try {
-			File ovpnFile = new File(NetAngelApplication.getAppContext().getFilesDir(), OVPN_FILE_NAME);
+			File ovpnFile = new File(context.getFilesDir(), OVPN_FILE_NAME);
 			inputStream = body.byteStream();
 			outputStream = new FileOutputStream(ovpnFile);
 			byte[] buf = new byte[4096];
@@ -158,10 +163,10 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
 		}
 	}
 
-	private static boolean importVpnProfile() {
-		File ovpnFile = new File(NetAngelApplication.getAppContext().getFilesDir(), OVPN_FILE_NAME);
+	private boolean importVpnProfile() {
+		File ovpnFile = new File(context.getFilesDir(), OVPN_FILE_NAME);
 		Uri uri = Uri.fromFile(ovpnFile);
-		boolean isImported = VpnHelper.importProfileFromFile(uri);
+		boolean isImported = new VpnHelper(context).importProfileFromFile(uri);
 		if (isImported) {
 			//noinspection ResultOfMethodCallIgnored
 			ovpnFile.delete();

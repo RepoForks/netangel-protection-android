@@ -33,14 +33,16 @@ import de.blinkt.openvpn.fragments.Utils;
 public class VpnHelper {
     private static final String TAG = VpnHelper.class.getSimpleName();
 
-    private VpnHelper() {
+    private Context context;
+
+    public VpnHelper(Context context) {
+        this.context = context;
     }
 
     @WorkerThread
-    public static boolean importProfileFromFile(@NonNull Uri ovpnFileUri) {
+    public boolean importProfileFromFile(@NonNull Uri ovpnFileUri) {
         InputStreamReader isr = null;
         try {
-            Context context = NetAngelApplication.getAppContext();
             InputStream is = context.getContentResolver().openInputStream(ovpnFileUri);
             if (is == null) {
                 return false;
@@ -94,7 +96,7 @@ public class VpnHelper {
         }
     }
 
-    private static String embedFile(String fileName, Utils.FileType type, @NonNull List<String> pathSegments,
+    private String embedFile(String fileName, Utils.FileType type, @NonNull List<String> pathSegments,
                                     boolean onlyFindFileAndNullOnNotFound) {
         if (fileName == null) {
             return null;
@@ -115,7 +117,7 @@ public class VpnHelper {
         return readFileContent(possibleFile, type == Utils.FileType.PKCS12);
     }
 
-    private static File findFileRaw(String fileName, @NonNull List<String> pathSegments) {
+    private File findFileRaw(String fileName, @NonNull List<String> pathSegments) {
         if (TextUtils.isEmpty(fileName)) {
             return null;
         }
@@ -155,7 +157,7 @@ public class VpnHelper {
         return null;
     }
 
-    private static String readFileContent(File possibleFile, boolean base64encode) {
+    private String readFileContent(File possibleFile, boolean base64encode) {
         byte[] content;
         try {
             content = readBytesFromFile(possibleFile);
@@ -167,7 +169,7 @@ public class VpnHelper {
         return VpnProfile.DISPLAYNAME_TAG + possibleFile.getName() + VpnProfile.INLINE_TAG + data;
     }
 
-    private static byte[] readBytesFromFile(File file) throws IOException {
+    private byte[] readBytesFromFile(File file) throws IOException {
         long len = file.length();
         if (len > VpnProfile.MAX_EMBED_FILE_SIZE) {
             throw new IOException("File size of file to import too large.");
@@ -186,14 +188,13 @@ public class VpnHelper {
     }
 
     @Nullable
-    public static VpnProfile getProfile() {
-        Collection<VpnProfile> profiles = ProfileManager.getInstance(NetAngelApplication.getAppContext())
+    public VpnProfile getProfile() {
+        Collection<VpnProfile> profiles = ProfileManager.getInstance(context)
                 .getProfiles();
         return profiles.isEmpty() ? null : profiles.iterator().next();
     }
 
-    public static void removeProfiles() {
-        Context context = NetAngelApplication.getAppContext();
+    public void removeProfiles() {
         ProfileManager pm = ProfileManager.getInstance(context);
         while (!pm.getProfiles().isEmpty()) {
             VpnProfile profile = pm.getProfiles().iterator().next();
@@ -202,8 +203,7 @@ public class VpnHelper {
     }
 
     @Nullable
-    public static Intent prepareVpnService() {
-        Context context = NetAngelApplication.getAppContext();
+    public Intent prepareVpnService() {
         Intent intent = VpnService.prepare(context);
         // Check if we want to fix /dev/tun
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -219,7 +219,7 @@ public class VpnHelper {
         return intent;
     }
 
-    private static boolean executeSuCmd(String command) {
+    private boolean executeSuCmd(String command) {
         boolean isCmFixed = false;
         try {
             ProcessBuilder pb = new ProcessBuilder("su", "-c", command);

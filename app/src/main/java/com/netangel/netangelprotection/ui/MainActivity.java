@@ -22,8 +22,10 @@ import android.widget.ToggleButton;
 import com.netangel.netangelprotection.NetAngelApplication;
 import com.netangel.netangelprotection.R;
 import com.netangel.netangelprotection.async.LogoutTask;
+import com.netangel.netangelprotection.service.VpnStateService;
 import com.netangel.netangelprotection.util.CommonUtils;
 import com.netangel.netangelprotection.util.Config;
+import com.netangel.netangelprotection.util.ProtectionManager;
 
 import java.io.IOException;
 
@@ -53,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 	ToggleButton switchProtect;
 
 	private OpenVPNService service;
+	private ProtectionManager protectionManager;
 	private boolean ignoreUserLeaveHint;
 
 	private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -109,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 		setContentView(R.layout.activity_main);
 		ButterKnife.bind(this);
 
+		protectionManager = ProtectionManager.getInstance();
 		VpnStatus.addStateListener(this);
 
 		IntentFilter intentFilter = new IntentFilter("onVpnConfigurationChanged");
@@ -194,12 +198,16 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 	}
 
 	private void connectVpn() {
-		if (CommonUtils.isInternetConnected()) {
+		if (CommonUtils.isInternetConnected(this)) {
 			ignoreUserLeaveHint = true;
-			ConnectVpnActivity.start(false);
+
+			ConnectVpnActivity.start(this, false);
+			VpnStateService.start(this);
 		} else {
 			Snackbar.make(switchProtect, R.string.check_internet_connection, Snackbar.LENGTH_LONG).show();
 			updateUI();
+
+			VpnStateService.stop(this);
 		}
 	}
 
@@ -210,9 +218,12 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 			if (service != null && service.getManagement() != null) {
                 service.getManagement().stopVPN(false);
             }
-			NetAngelApplication.setDisconnectedByApp(true);
-			NetAngelApplication.setProtected(false);
+
+			protectionManager.setDisconnectedByApp(true);
+			protectionManager.setProtected(this, false);
 			updateUI();
+
+			VpnStateService.stop(this);
 		}
 	}
 
@@ -222,9 +233,12 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 			Intent intent = new Intent(this, OpenVPNService.class);
 			intent.setAction(OpenVPNService.PAUSE_VPN);
 			startService(intent);
+
 			if (service != null && service.getManagement() != null) {
 				service.getManagement().pause(reason);
 			}
+
+			VpnStateService.stop(this);
 		}
 	}
 
@@ -234,9 +248,12 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 			Intent intent = new Intent(this, OpenVPNService.class);
 			intent.setAction(OpenVPNService.RESUME_VPN);
 			startService(intent);
+
 			if (service != null && service.getManagement() != null) {
 				service.getManagement().resume();
 			}
+
+			VpnStateService.start(this);
 		}
 	}
 
@@ -257,26 +274,8 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 		} else if (prevLevel == ConnectionStatus.LEVEL_CONNECTING_SERVER_REPLIED) {
 			if (level == ConnectionStatus.LEVEL_CONNECTED) {
 				WaitingDialog.dismiss(getSupportFragmentManager());
-				NetAngelApplication.setProtected(true);
+				protectionManager.setProtected(this, true);
 				Config.saveBoolean(this, Config.IS_SWITCH_ON, true);
-				/*Intent i = new Intent(android.provider.Settings.ACTION_BATTERY_SAVER_SETTINGS);
-				if (i.resolveActivity(getPackageManager()) != null) {
-					new AlertDialog.Builder(this)
-						.setTitle("Disable Smart Manager to prevent automatic shut down of Net Angel")
-						.setMessage("By confirming, you will only disable Smart Manager for this app")
-						.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialogInterface, int i) {
-								try {
-									Intent intent = new Intent(android.provider.Settings.ACTION_BATTERY_SAVER_SETTINGS);
-									startActivity(intent);
-								} catch (Exception e) {
-								}
-							}
-						})
-						.setNegativeButton("Cancel", null)
-						.show();
-				}*/
 			} else if (level == ConnectionStatus.LEVEL_AUTH_FAILED || level == ConnectionStatus.LEVEL_NOTCONNECTED ) {
 				WaitingDialog.dismiss(getSupportFragmentManager());
 				Snackbar.make(switchProtect, R.string.failed_to_connect, Snackbar.LENGTH_LONG).show();

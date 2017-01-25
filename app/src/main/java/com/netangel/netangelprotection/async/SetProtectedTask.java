@@ -1,5 +1,6 @@
 package com.netangel.netangelprotection.async;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.netangel.netangelprotection.restful.RestfulApi;
@@ -16,13 +17,21 @@ public class SetProtectedTask extends AsyncTask<Boolean, Void, Void> {
     private static final String TAG = SetProtectedTask.class.getSimpleName();
     private static final int RESEND_TIMEOUT = 5_000;
 
-    private static final ResendRunnable resendRunnable = new ResendRunnable();
+    private ResendRunnable resendRunnable;
+
+    private Context context;
+    private boolean isProtected;
+
+    public SetProtectedTask(Context context, boolean isProtected) {
+        this.context = context;
+        this.resendRunnable = new ResendRunnable(context);
+        this.isProtected = isProtected;
+    }
 
     @Override
     protected Void doInBackground(Boolean... params) {
-        boolean isProtected = params[0];
         MainHandler.get().removeCallbacks(resendRunnable);
-        if (!CommonUtils.isInternetConnected()) {
+        if (!CommonUtils.isInternetConnected(context)) {
             LogUtils.v(TAG, "No Internet connection");
             resend(isProtected);
             return null;
@@ -31,9 +40,9 @@ public class SetProtectedTask extends AsyncTask<Boolean, Void, Void> {
         boolean success = false;
         Call<ResponseBody> call;
         if (isProtected) {
-            call = RestfulApi.getInstance().setProtected();
+            call = RestfulApi.getInstance(context).setProtected();
         } else {
-            call = RestfulApi.getInstance().setUnprotected();
+            call = RestfulApi.getInstance(context).setUnprotected();
         }
         try {
             Response<ResponseBody> response = call.execute();
@@ -51,10 +60,10 @@ public class SetProtectedTask extends AsyncTask<Boolean, Void, Void> {
             resend(isProtected);
         } else if (isProtected) {
             LogUtils.v(TAG, "Start CheckInService");
-            CheckInService.start();
+            CheckInService.start(context);
         } else {
             LogUtils.v(TAG, "Stop CheckInService");
-            CheckInService.stop();
+            CheckInService.stop(context);
         }
 
         return null;
@@ -68,7 +77,12 @@ public class SetProtectedTask extends AsyncTask<Boolean, Void, Void> {
     }
 
     private static class ResendRunnable implements Runnable {
-        private volatile boolean isProtected;
+        private Context context;
+        private boolean isProtected;
+
+        ResendRunnable(Context context) {
+            this.context = context;
+        }
 
         void setProtected(boolean isProtected) {
             this.isProtected = isProtected;
@@ -76,7 +90,7 @@ public class SetProtectedTask extends AsyncTask<Boolean, Void, Void> {
 
         @Override
         public void run() {
-            new SetProtectedTask().execute(isProtected);
+            new SetProtectedTask(context, isProtected).execute();
         }
     }
 }
