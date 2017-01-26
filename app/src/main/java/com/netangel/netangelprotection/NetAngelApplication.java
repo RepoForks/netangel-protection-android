@@ -7,6 +7,7 @@ import android.os.StrictMode;
 import android.support.annotation.NonNull;
 
 import com.netangel.netangelprotection.async.SetProtectedTask;
+import com.netangel.netangelprotection.service.CheckInService;
 import com.netangel.netangelprotection.service.VpnStateService;
 import com.netangel.netangelprotection.ui.ConnectVpnActivity;
 import com.netangel.netangelprotection.util.Config;
@@ -20,18 +21,6 @@ public class NetAngelApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        if (BuildConfig.DEBUG) {
-            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                    .detectAll()
-                    .penaltyLog()
-                    .penaltyFlashScreen()
-                    .build());
-            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                    .detectAll()
-                    .penaltyLog()
-                    .build());
-        }
 
         PRNGFixes.apply();
         VpnStatus.initLogCache(getCacheDir());
