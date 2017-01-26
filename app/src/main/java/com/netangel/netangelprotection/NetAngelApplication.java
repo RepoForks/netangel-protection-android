@@ -25,5 +25,6 @@ public class NetAngelApplication extends Application {
         PRNGFixes.apply();
         VpnStatus.initLogCache(getCacheDir());
         VpnStateService.start(this);
+        CheckInService.start(this);
     }
 }
