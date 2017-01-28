@@ -10,12 +10,14 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -27,10 +29,15 @@ import com.netangel.netangelprotection.async.LoginTask;
 import com.netangel.netangelprotection.util.CommonUtils;
 import com.netangel.netangelprotection.util.Config;
 import com.netangel.netangelprotection.util.ProtectionManager;
+import com.netangel.netangelprotection.util.VpnHelper;
 import com.sromku.simple.storage.SimpleStorage;
 import com.sromku.simple.storage.Storage;
 
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,6 +59,7 @@ public class LoginActivity extends AppCompatActivity implements VpnStatus.StateL
 
 	private ProgressDialog progressDialog;
 	private Storage storage;
+	private VpnHelper helper;
 
 	public static void start(@NonNull Context context) {
 		Intent intent = new Intent(context, LoginActivity.class);
@@ -64,6 +72,7 @@ public class LoginActivity extends AppCompatActivity implements VpnStatus.StateL
 		setContentView(R.layout.activity_login);
 		ButterKnife.bind(this);
 		VpnStatus.addStateListener(this);
+		helper = new VpnHelper(this);
 
 		txtSignUp.setPaintFlags(txtSignUp.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
@@ -84,14 +93,12 @@ public class LoginActivity extends AppCompatActivity implements VpnStatus.StateL
 				loadDataFromStorage();
 			}
 		}
+	}
 
-		if (savedInstanceState == null) {
-			boolean isSwitchOn = Config.getBoolean(this, Config.IS_SWITCH_ON, false);
-			boolean isProtected = Config.getBoolean(this, Config.STATUS_PROTECTED, false);
-			if (isSwitchOn && !isProtected) {
-				ConnectVpnActivity.start(this, false);
-			}
-		}
+	@Override
+	public void onResume() {
+		super.onResume();
+		connectToVpn(this, helper);
 	}
 
 	@Override
@@ -316,5 +323,22 @@ public class LoginActivity extends AppCompatActivity implements VpnStatus.StateL
 			.setMessage(getResources().getString(R.string.login_failed_message))
 			.setPositiveButton(R.string.ok, null)
 			.show();
+	}
+
+	@VisibleForTesting
+	protected void connectToVpn(Context context, VpnHelper helper) {
+		if (isSwitchOn(context) && !helper.isVpnConnected()) {
+			startVpnConnectionActivity(context);
+		}
+	}
+
+	@VisibleForTesting
+	protected boolean isSwitchOn(Context context) {
+		return Config.getBoolean(context, Config.IS_SWITCH_ON, false);
+	}
+
+	@VisibleForTesting
+	protected void startVpnConnectionActivity(Context context) {
+		ConnectVpnActivity.start(context, false);
 	}
 }

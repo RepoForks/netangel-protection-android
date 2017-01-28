@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -20,7 +21,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -94,6 +99,31 @@ public class VpnHelper {
         } finally {
             CommonUtils.closeSilently(isr);
         }
+    }
+
+    public boolean isVpnConnected() {
+        try {
+            for (NetworkInterfaceWrapper networkInterface : getNetworkInterfaces()) {
+                if (networkInterface.isUp && (networkInterface.name.contains("tun") ||
+                        networkInterface.name.contains("pptp"))) {
+                    return true;
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    @VisibleForTesting
+    protected List<NetworkInterfaceWrapper> getNetworkInterfaces() throws SocketException {
+        List<NetworkInterfaceWrapper> wrappers = new ArrayList<>();
+        for(NetworkInterface networkInterface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+            wrappers.add(new NetworkInterfaceWrapper(networkInterface.getName(), networkInterface.isUp()));
+        }
+
+        return wrappers;
     }
 
     private String embedFile(String fileName, Utils.FileType type, @NonNull List<String> pathSegments,
@@ -232,5 +262,15 @@ public class VpnHelper {
             VpnStatus.logException("SU command", e);
         }
         return isCmFixed;
+    }
+
+    public static class NetworkInterfaceWrapper {
+        public String name;
+        public boolean isUp;
+
+        public NetworkInterfaceWrapper(String name, boolean isUp) {
+            this.name = name;
+            this.isUp = isUp;
+        }
     }
 }

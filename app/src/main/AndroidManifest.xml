@@ -37,8 +37,8 @@
         <service android:name=".service.CheckInService" />
         <service android:name=".service.VpnStateService" />
 
-        <receiver android:name=".receiver.BootReceiver">
-            <intent-filter>
+        <receiver android:name=".receiver.BootReceiver" >
+            <intent-filter android:priority="999">
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
