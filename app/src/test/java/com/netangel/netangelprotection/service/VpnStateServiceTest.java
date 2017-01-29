@@ -91,7 +91,7 @@ public class VpnStateServiceTest extends NetAngelRobolectricSuite {
         VpnStatus.ConnectionStatus current = VpnStatus.ConnectionStatus.LEVEL_CONNECTED;
 
         updateState(current, previous);
-        verify(service).startForeground(R.string.device_protected);
+        verify(service).startForeground(R.string.device_protected, true);
         verify(manager).setProtected(service, true);
     }
 
@@ -102,7 +102,7 @@ public class VpnStateServiceTest extends NetAngelRobolectricSuite {
         VpnStatus.ConnectionStatus current = VpnStatus.ConnectionStatus.LEVEL_NOTCONNECTED;
 
         updateState(current, previous);
-        verify(service).startForeground(R.string.device_not_protected);
+        verify(service).startForeground(R.string.device_not_protected, true);
         verify(service).restartVpnConnection();
         verify(manager).setProtected(service, false);
     }
@@ -114,7 +114,7 @@ public class VpnStateServiceTest extends NetAngelRobolectricSuite {
         VpnStatus.ConnectionStatus current = VpnStatus.ConnectionStatus.LEVEL_NOTCONNECTED;
 
         updateState(current, previous);
-        verify(service).startForeground(R.string.device_not_protected);
+        verify(service).startForeground(R.string.device_not_protected, true);
         verify(manager).setProtected(service, false);
         verify(manager).setDisconnectedByApp(false);
     }
@@ -125,8 +125,18 @@ public class VpnStateServiceTest extends NetAngelRobolectricSuite {
         VpnStatus.ConnectionStatus current = VpnStatus.ConnectionStatus.LEVEL_NONETWORK;
 
         updateState(current, previous);
-        verify(service).startForeground(R.string.failed_to_connect);
+        verify(service).startForeground(R.string.failed_to_connect, true);
         verify(manager).setProtected(service, false);
+    }
+
+    @Test
+    public void shouldMarkAsConnecting() {
+        VpnStatus.ConnectionStatus previous = VpnStatus.ConnectionStatus.LEVEL_CONNECTING_NO_SERVER_REPLY_YET;
+        VpnStatus.ConnectionStatus current = VpnStatus.ConnectionStatus.LEVEL_CONNECTING_SERVER_REPLIED;
+
+        updateState(current, previous);
+        verify(service).startForeground(R.string.connecting_to_vpn, false);
+        verifyNoMoreInteractions(manager);
     }
 
     private void updateState(VpnStatus.ConnectionStatus level, VpnStatus.ConnectionStatus previousLevel) {

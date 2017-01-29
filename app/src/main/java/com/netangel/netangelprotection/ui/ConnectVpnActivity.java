@@ -1,13 +1,16 @@
 package com.netangel.netangelprotection.ui;
 
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AppCompatActivity;
 
 import com.netangel.netangelprotection.BuildConfig;
-import com.netangel.netangelprotection.NetAngelApplication;
+import com.netangel.netangelprotection.service.VpnReconnectService;
 import com.netangel.netangelprotection.service.VpnStateService;
 import com.netangel.netangelprotection.util.VpnHelper;
 
@@ -20,6 +23,10 @@ public class ConnectVpnActivity extends AppCompatActivity {
     private static final int REQUEST_CONFIRM_VPN = 0;
 
     private boolean forceConfirm;
+    private boolean vpnConfirmed;
+
+    private BroadcastReceiver homePressed;
+
 
     public static void start(Context context, boolean forceConfirm) {
         Intent intent = new Intent(context, ConnectVpnActivity.class);
@@ -31,10 +38,20 @@ public class ConnectVpnActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        forceConfirm = getIntent().getBooleanExtra(EXTRA_FORCE_CONFIRM, false);
-        if (savedInstanceState == null) {
-            launchVpn();
-        }
+        setForceConfirm(getIntent().getBooleanExtra(EXTRA_FORCE_CONFIRM, false));
+        setVpnConfirmed(false);
+
+        launchVpn();
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+        homePressed = getHomePressedReceiver();
+        registerReceiver(homePressed, filter);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(homePressed);
     }
 
     private void launchVpn() {
@@ -67,6 +84,8 @@ public class ConnectVpnActivity extends AppCompatActivity {
     }
 
     private void onVpnConfirmed() {
+        setVpnConfirmed(true);
+
         VpnProfile profile = new VpnHelper(this).getProfile();
         if (profile != null) {
             VPNLaunchHelper.startOpenVpn(profile, this);
@@ -97,5 +116,32 @@ public class ConnectVpnActivity extends AppCompatActivity {
     public void finish() {
         super.finish();
         overridePendingTransition(0, 0);
+    }
+
+    @VisibleForTesting
+    protected void setForceConfirm(boolean forceConfirm) {
+        this.forceConfirm = forceConfirm;
+    }
+
+    @VisibleForTesting
+    protected void setVpnConfirmed(boolean confirmed) {
+        this.vpnConfirmed = confirmed;
+    }
+
+    @VisibleForTesting
+    protected void restartActivity(Context context) {
+        VpnReconnectService.start(context, 1500);
+    }
+
+    @VisibleForTesting
+    protected BroadcastReceiver getHomePressedReceiver() {
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (!vpnConfirmed && forceConfirm) {
+                    restartActivity(context);
+                }
+            }
+        };
     }
 }

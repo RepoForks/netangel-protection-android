@@ -31,11 +31,13 @@
 
         <activity
             android:name=".ui.ConnectVpnActivity"
+            android:launchMode="singleInstance"
             android:excludeFromRecents="true"
             android:theme="@style/Theme.NetAngel.Translucent" />
 
         <service android:name=".service.CheckInService" />
         <service android:name=".service.VpnStateService" />
+        <service android:name=".service.VpnReconnectService" />
 
         <receiver android:name=".receiver.BootReceiver">
             <intent-filter>
