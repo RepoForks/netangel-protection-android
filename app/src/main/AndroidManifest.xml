@@ -38,6 +38,7 @@
         <service android:name=".service.CheckInService" />
         <service android:name=".service.VpnStateService" />
         <service android:name=".service.VpnReconnectService" />
+        <service android:name=".service.InternetAvailabilityCheckService" />
 
         <receiver android:name=".receiver.BootReceiver" >
             <intent-filter android:priority="999">

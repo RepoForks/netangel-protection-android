@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 
 import com.netangel.netangelprotection.async.SetProtectedTask;
 import com.netangel.netangelprotection.service.CheckInService;
+import com.netangel.netangelprotection.service.InternetAvailabilityCheckService;
 import com.netangel.netangelprotection.service.VpnStateService;
 import com.netangel.netangelprotection.ui.ConnectVpnActivity;
 import com.netangel.netangelprotection.util.Config;
@@ -26,5 +27,6 @@ public class NetAngelApplication extends Application {
         VpnStatus.initLogCache(getCacheDir());
         VpnStateService.start(this);
         CheckInService.start(this);
+        InternetAvailabilityCheckService.scheduleNextRun(this);
     }
 }

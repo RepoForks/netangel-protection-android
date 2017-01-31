@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 
 import com.netangel.netangelprotection.restful.RestfulApi;
 import com.netangel.netangelprotection.service.CheckInService;
+import com.netangel.netangelprotection.service.InternetAvailabilityCheckService;
 import com.netangel.netangelprotection.util.CommonUtils;
 import com.netangel.netangelprotection.util.LogUtils;
 import com.netangel.netangelprotection.util.MainHandler;
@@ -61,6 +62,7 @@ public class SetProtectedTask extends AsyncTask<Boolean, Void, Void> {
         } else if (isProtected) {
             LogUtils.v(TAG, "Start CheckInService");
             CheckInService.start(context);
+            InternetAvailabilityCheckService.scheduleNextRun(context);
         } else {
             LogUtils.v(TAG, "Stop CheckInService");
             CheckInService.stop(context);

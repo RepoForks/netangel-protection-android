@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.support.annotation.VisibleForTesting;
 
 import com.netangel.netangelprotection.service.VpnStateService;
+import com.netangel.netangelprotection.service.CheckInService;
+import com.netangel.netangelprotection.service.InternetAvailabilityCheckService;
 import com.netangel.netangelprotection.ui.ConnectVpnActivity;
 import com.netangel.netangelprotection.util.Config;
 
@@ -29,5 +31,7 @@ public class BootReceiver extends BroadcastReceiver {
     protected void startVpnConnection(Context context) {
         VpnStateService.start(context);
         ConnectVpnActivity.start(context, true);
+        
+        InternetAvailabilityCheckService.scheduleNextRun(context);
     }
 }
