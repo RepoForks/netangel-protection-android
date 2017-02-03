@@ -5,15 +5,8 @@ import android.app.IntentService;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.display.DisplayManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.wifi.WifiManager;
-import android.os.Build;
-import android.os.PowerManager;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.Display;
 
 import com.netangel.netangelprotection.model.CheckInResult;
 import com.netangel.netangelprotection.restful.RestfulApi;
