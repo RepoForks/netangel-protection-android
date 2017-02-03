@@ -5,6 +5,7 @@
     <string name="loading">Loading</string>
     <string name="vpn_disabled">VPN connection is disabled</string>
     <string name="check_internet_connection">Check Internet connection</string>
+    <string name="device_type">phone</string>
 
     <!-- LoginActivity -->
     <string name="email">Email</string>
@@ -28,5 +29,7 @@
     <!-- VpnStateService -->
     <string name="connection_status">Connection Status</string>
     <string name="connecting_to_vpn">Connecting to NetAngel…</string>
+
+
 
 </resources>
