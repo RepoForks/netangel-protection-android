@@ -96,8 +96,8 @@ public class LoginActivity extends AppCompatActivity implements VpnStatus.StateL
 	}
 
 	@Override
-	public void onResume() {
-		super.onResume();
+	public void onStart() {
+		super.onStart();
 		connectToVpn(this, helper);
 	}
 
