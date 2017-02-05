@@ -1,22 +1,16 @@
 package com.netangel.netangelprotection.ui;
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -28,10 +22,6 @@ import com.netangel.netangelprotection.util.CommonUtils;
 import com.netangel.netangelprotection.util.Config;
 import com.netangel.netangelprotection.util.ProtectionManager;
 import com.netangel.netangelprotection.util.VpnHelper;
-import com.sromku.simple.storage.SimpleStorage;
-import com.sromku.simple.storage.Storage;
-
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,7 +30,7 @@ import de.blinkt.openvpn.core.VpnStatus;
 
 public class LoginActivity extends AppCompatActivity implements VpnStatus.StateListener {
 
-	private final static int PERMISSIONS_REQUEST = 100;
+	private static final int PASSWORD_MIN_LENGTH = 8;
 
 	@BindView(R.id.edt_email)
 	EditText email;
@@ -64,8 +54,8 @@ public class LoginActivity extends AppCompatActivity implements VpnStatus.StateL
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_login);
-
 		ButterKnife.bind(this);
+
 		VpnStatus.addStateListener(this);
 		helper = new VpnHelper(this);
 
@@ -78,6 +68,7 @@ public class LoginActivity extends AppCompatActivity implements VpnStatus.StateL
 					onClickSignIn();
 					return true;
 				}
+
 				return false;
 			}
 		});
@@ -113,7 +104,7 @@ public class LoginActivity extends AppCompatActivity implements VpnStatus.StateL
 
 	@OnClick(R.id.btn_sign_in)
 	public void onClickSignIn() {
-		if (validateInput()) {
+		if (validateInput(this, email.getText().toString(), password.getText().toString())) {
 			if (CommonUtils.isInternetConnected(this)) {
 				String email = this.email.getText().toString().trim();
 				String password = this.password.getText().toString().trim();
@@ -133,37 +124,53 @@ public class LoginActivity extends AppCompatActivity implements VpnStatus.StateL
 		startActivity(browserIntent);
 	}
 
-	private boolean validateInput() {
-		boolean result = true;
-		String message = "";
+	@VisibleForTesting
+	protected boolean validateInput(Context context, String email, String password) {
+		String passwordMessage = validatePassword(context, password);
+		String emailMessage = validateEmail(context, email);
 
-		// Password
-		if (TextUtils.isEmpty(password.getText().toString())) {
-			result = false;
-			message = getResources().getString(R.string.enter_password_message);
-		} else if (password.getText().toString().length() < 8) {
-			result = false;
-			message = getResources().getString(R.string.password_length_message);
+		boolean inputOk = passwordMessage == null && emailMessage == null;
+		if (!inputOk) {
+			alertIncorrectPassword(emailMessage != null ? emailMessage : passwordMessage);
 		}
 
-		// Email
-		if (TextUtils.isEmpty(email.getText().toString())) {
-			result = false;
-			message = getResources().getString(R.string.enter_email_message);
-		} else if (!CommonUtils.isValidEmail(email.getText().toString())) {
-			result = false;
-			message = getResources().getString(R.string.invalid_email_message);
-		}
+		return inputOk;
+	}
 
-		if (!result) {
-			new AlertDialog.Builder(this)
+	@VisibleForTesting
+	protected void alertIncorrectPassword(String message) {
+		new AlertDialog.Builder(this)
 				.setTitle(R.string.error)
 				.setMessage(message)
 				.setPositiveButton(R.string.ok, null)
 				.show();
+	}
+
+	@VisibleForTesting
+	protected String validatePassword(Context context, String password) {
+		if (password == null || password.length() == 0) {
+			return context.getString(R.string.enter_password_message);
+		} else if (password.length() < PASSWORD_MIN_LENGTH) {
+			return context.getString(R.string.password_length_message);
 		}
 
-		return result;
+		return null;
+	}
+
+	@VisibleForTesting
+	protected String validateEmail(Context context, String email) {
+		if (email == null || email.length() == 0) {
+			return context.getString(R.string.enter_email_message);
+		} else if (!isValidEmail(email)) {
+			return context.getString(R.string.invalid_email_message);
+		}
+
+		return null;
+	}
+
+	@VisibleForTesting
+	protected boolean isValidEmail(String email) {
+		return CommonUtils.isValidEmail(email);
 	}
 
 	public void onLoginFinished(boolean isSuccess) {

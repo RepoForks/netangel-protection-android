@@ -74,7 +74,6 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.4'
 
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.16'
-    compile 'com.sromku:simple-storage:1.2.0'
 
     testCompile 'junit:junit:4.12'
     testCompile "org.robolectric:robolectric:3.1.1"
