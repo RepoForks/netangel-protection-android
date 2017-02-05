@@ -22,7 +22,7 @@ public class BootReceiver extends BroadcastReceiver {
 
     @VisibleForTesting
     protected boolean isSwitchOn(Context context) {
-        return Config.getBoolean(context, Config.IS_SWITCH_ON, false);
+        return Config.getBoolean(context, Config.IS_VPN_ENABLED, false);
     }
 
     @VisibleForTesting

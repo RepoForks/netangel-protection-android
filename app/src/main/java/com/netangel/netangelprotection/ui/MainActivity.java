@@ -19,7 +19,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.netangel.netangelprotection.NetAngelApplication;
 import com.netangel.netangelprotection.R;
 import com.netangel.netangelprotection.async.LogoutTask;
 import com.netangel.netangelprotection.service.VpnStateService;
@@ -43,16 +42,16 @@ import pl.droidsonroids.gif.GifImageView;
 public class MainActivity extends AppCompatActivity implements VpnStatus.StateListener {
 
 	@BindView(R.id.img_logo)
-	GifImageView imgLogo;
+	GifImageView logo;
 
 	@BindView(R.id.txt_device_protected_status)
-	TextView txtDeviceProtectedStatus;
+	TextView protectionStatus;
 
 	@BindView(R.id.txt_dashboard)
-	TextView txtDashboard;
+	TextView dashboardLink;
 
 	@BindView(R.id.toggle_protect)
-	ToggleButton switchProtect;
+	ToggleButton protectToggle;
 
 	private OpenVPNService service;
 	private ProtectionManager protectionManager;
@@ -61,8 +60,8 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 	private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			boolean isEnableVpn = Config.getBoolean(MainActivity.this, Config.ENABLE_VPN, true);
-			if (isEnableVpn) {
+			boolean switchOn = Config.getBoolean(MainActivity.this, Config.IS_VPN_ENABLED, true);
+			if (switchOn) {
 				boolean isPauseVpn = Config.getBoolean(MainActivity.this, Config.PAUSE_VPN, false);
 				if (isPauseVpn) {
 					pauseVpn(OpenVPNManagement.pauseReason.userPause);
@@ -71,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 				}
 			} else {
 				disconnectVpn();
-				Config.remove(MainActivity.this, Config.ENABLE_VPN);
 			}
 
 			boolean isBatterySaverOn = Config.getBoolean(MainActivity.this, Config.BATTERY_SAVER, true);
@@ -88,10 +86,9 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 			OpenVPNService.LocalBinder binder = (OpenVPNService.LocalBinder) service;
 			MainActivity.this.service = binder.getService();
 
-			boolean isEnableVpn = Config.getBoolean(MainActivity.this, Config.ENABLE_VPN, true);
+			boolean isEnableVpn = Config.getBoolean(MainActivity.this, Config.IS_VPN_ENABLED, true);
 			if (!isEnableVpn) {
 				disconnectVpn();
-				Config.remove(MainActivity.this, Config.ENABLE_VPN);
 			}
 		}
 
@@ -118,10 +115,10 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 		IntentFilter intentFilter = new IntentFilter("onVpnConfigurationChanged");
 		LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, intentFilter);
 
-		txtDashboard.setPaintFlags(txtDashboard.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+		dashboardLink.setPaintFlags(dashboardLink.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
 		if (savedInstanceState == null) {
-			boolean isSwitchOn = Config.getBoolean(this, Config.IS_SWITCH_ON, false);
+			boolean isSwitchOn = Config.getBoolean(this, Config.IS_VPN_ENABLED, false);
 			boolean isProtected = Config.getBoolean(this, Config.STATUS_PROTECTED, false);
 			if (isSwitchOn && !isProtected) {
 				connectVpn();
@@ -170,30 +167,30 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 
 	private void updateUI() {
 		boolean isProtected = Config.getBoolean(this, Config.STATUS_PROTECTED, false);
-		switchProtect.setChecked(isProtected);
+		protectToggle.setChecked(isProtected);
 		if (isProtected) {
 			try {
 				GifDrawable gifFromResource = new GifDrawable(getResources(), R.drawable.status_on_gif);
 				gifFromResource.setLoopCount(1);
-				imgLogo.setImageDrawable(gifFromResource);
+				logo.setImageDrawable(gifFromResource);
 			} catch (IOException e) {
-				imgLogo.setImageResource(R.drawable.status_on);
+				logo.setImageResource(R.drawable.status_on);
 				e.printStackTrace();
 			}
-			txtDeviceProtectedStatus.setText(R.string.device_protected);
+			protectionStatus.setText(R.string.device_protected);
 		} else {
-			imgLogo.setImageResource(R.drawable.status_off);
-			txtDeviceProtectedStatus.setText(R.string.device_not_protected);
+			logo.setImageResource(R.drawable.status_off);
+			protectionStatus.setText(R.string.device_not_protected);
 		}
 	}
 
 	@OnClick(R.id.toggle_protect)
 	public void onClickSwitchProtect() {
-		if (switchProtect.isChecked()) {
+		if (protectToggle.isChecked()) {
 			connectVpn();
 		} else {
 			disconnectVpn();
-			Config.saveBoolean(this, Config.IS_SWITCH_ON, false);
+			Config.saveBoolean(this, Config.IS_VPN_ENABLED, false);
 		}
 	}
 
@@ -204,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 			ConnectVpnActivity.start(this, false);
 			VpnStateService.start(this);
 		} else {
-			Snackbar.make(switchProtect, R.string.check_internet_connection, Snackbar.LENGTH_LONG).show();
+			Snackbar.make(protectToggle, R.string.check_internet_connection, Snackbar.LENGTH_LONG).show();
 			updateUI();
 
 			VpnStateService.stop(this);
@@ -275,10 +272,10 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 			if (level == ConnectionStatus.LEVEL_CONNECTED) {
 				WaitingDialog.dismiss(getSupportFragmentManager());
 				protectionManager.setProtected(this, true);
-				Config.saveBoolean(this, Config.IS_SWITCH_ON, true);
+				Config.saveBoolean(this, Config.IS_VPN_ENABLED, true);
 			} else if (level == ConnectionStatus.LEVEL_AUTH_FAILED || level == ConnectionStatus.LEVEL_NOTCONNECTED ) {
 				WaitingDialog.dismiss(getSupportFragmentManager());
-				Snackbar.make(switchProtect, R.string.failed_to_connect, Snackbar.LENGTH_LONG).show();
+				Snackbar.make(protectToggle, R.string.failed_to_connect, Snackbar.LENGTH_LONG).show();
 			}
 		}
 		updateUI();

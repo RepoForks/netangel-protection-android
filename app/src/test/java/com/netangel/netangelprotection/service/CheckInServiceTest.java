@@ -4,7 +4,6 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 
-import com.netangel.netangelprotection.NetAngelJunitSuite;
 import com.netangel.netangelprotection.NetAngelRobolectricSuite;
 import com.netangel.netangelprotection.model.CheckInResult;
 import com.netangel.netangelprotection.restful.RestfulApi;
@@ -19,10 +18,8 @@ import org.robolectric.RuntimeEnvironment;
 import java.io.IOException;
 
 import retrofit2.Call;
-import retrofit2.Response;
 
 import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 
 public class CheckInServiceTest extends NetAngelRobolectricSuite {
 
@@ -127,7 +124,7 @@ public class CheckInServiceTest extends NetAngelRobolectricSuite {
 
         verify(service, times(1)).saveBoolean(Config.BATTERY_SAVER, true);
         verify(service, times(1)).saveBoolean(Config.ENABLE_VPN, true);
-        verify(service, times(1)).saveBoolean(Config.IS_SWITCH_ON, true);
+        verify(service, times(1)).saveBoolean(Config.IS_VPN_ENABLED, true);
         verify(service, times(1)).saveBoolean(Config.PAUSE_VPN, true);
 
         verify(service).sendBroadcast(anyString());

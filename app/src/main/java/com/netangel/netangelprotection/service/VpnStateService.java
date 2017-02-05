@@ -1,10 +1,8 @@
 package com.netangel.netangelprotection.service;
 
-import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
@@ -26,7 +24,7 @@ public class VpnStateService extends Service implements VpnStatus.StateListener 
     protected static int FOREGROUND_ID = 1001;
 
     public static void start(Context context) {
-        if (!IS_RUNNING && Config.getBoolean(context, Config.ENABLE_VPN, true)) {
+        if (!IS_RUNNING && Config.getBoolean(context, Config.IS_VPN_ENABLED, true)) {
             IS_RUNNING = true;
             context.startService(new Intent(context, VpnStateService.class));
         }
@@ -94,7 +92,7 @@ public class VpnStateService extends Service implements VpnStatus.StateListener 
 
             if (protectionManager.isDisconnectedByApp()) {
                 protectionManager.setDisconnectedByApp(false);
-            } else if (Config.getBoolean(this, Config.ENABLE_VPN, true)) {
+            } else if (Config.getBoolean(this, Config.IS_VPN_ENABLED, true)) {
                 restartVpnConnection();
             }
         } else if (level == VpnStatus.ConnectionStatus.LEVEL_NONETWORK) {

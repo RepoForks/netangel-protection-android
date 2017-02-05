@@ -17,10 +17,9 @@ public final class Config {
 	public static final String SECRET_TOKEN = "secret_token";
 //	public static final String CREDENTIAL = "credential";
 	public static final String IS_VPN_PROFILE_IMPORTED = "is_vpn_profile_imported";
-	public static final String IS_SWITCH_ON = "is_switch_on";
+	public static final String IS_VPN_ENABLED = "is_switch_on";
 	public static final String STATUS_PROTECTED = "status_protected";
 	public static final String BATTERY_SAVER = "battery_saver";
-	public static final String ENABLE_VPN = "enable_vpn";
 	public static final String PAUSE_VPN = "pause_vpn";
 
 	/**

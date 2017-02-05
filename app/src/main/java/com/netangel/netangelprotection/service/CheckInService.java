@@ -50,8 +50,7 @@ public class CheckInService extends IntentService {
 					saveBoolean(Config.BATTERY_SAVER, isBatterySaverOn);
 
 					boolean isEnableVpn = result.getChanges().isEnableVpn();
-					saveBoolean(Config.ENABLE_VPN, isEnableVpn);
-					saveBoolean(Config.IS_SWITCH_ON, isEnableVpn);
+					saveBoolean(Config.IS_VPN_ENABLED, isEnableVpn);
 
 					boolean isPauseVpn = result.getChanges().isPauseVpn();
 					saveBoolean(Config.PAUSE_VPN, isPauseVpn);
