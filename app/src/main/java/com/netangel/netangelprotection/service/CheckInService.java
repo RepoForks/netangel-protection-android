@@ -19,6 +19,7 @@ import retrofit2.Response;
 
 public class CheckInService extends IntentService {
 
+	public static final String VPN_CONFIGURATION_CHANGED_BROADCAST = "com.netangel.VPN_CONFIGURATION_CHANGED";
 	private static final int REQUEST_CODE = 224;
 	private static final long ONE_MIN = 60 * 1000;
 	private static final long REGULAR_INTERVAL = 15 * ONE_MIN;
@@ -45,7 +46,6 @@ public class CheckInService extends IntentService {
 			if (wrapper.isSuccessful) {
 				CheckInResult result = wrapper.body;
 				if (result != null && result.hasPendingChanges() && result.getChanges() != null) {
-
 					boolean isBatterySaverOn = result.getChanges().isBatterySaver();
 					saveBoolean(Config.BATTERY_SAVER, isBatterySaverOn);
 
@@ -55,7 +55,7 @@ public class CheckInService extends IntentService {
 					boolean isPauseVpn = result.getChanges().isPauseVpn();
 					saveBoolean(Config.PAUSE_VPN, isPauseVpn);
 
-					sendBroadcast("onVpnConfigurationChanged");
+					sendBroadcast(VPN_CONFIGURATION_CHANGED_BROADCAST);
 				}
 			}
 

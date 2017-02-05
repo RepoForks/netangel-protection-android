@@ -63,7 +63,6 @@ public class ProfileManager {
         Editor prefsedit = prefs.edit();
         prefsedit.putString(LAST_CONNECTED_PROFILE, null);
         prefsedit.apply();
-
     }
 
     /**

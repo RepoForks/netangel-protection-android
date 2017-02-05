@@ -89,6 +89,15 @@ public class LoginActivity extends AppCompatActivity implements VpnStatus.StateL
 	@Override
 	public void updateState(String state, String logmessage, int localizedResId,
 							final VpnStatus.ConnectionStatus level, final VpnStatus.ConnectionStatus prevLevel) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				updateState(level, prevLevel);
+			}
+		});
+	}
+
+	private void updateState(final VpnStatus.ConnectionStatus level, final VpnStatus.ConnectionStatus prevLevel) {
 		if (level == VpnStatus.ConnectionStatus.LEVEL_START) {
 			WaitingDialog.show(getSupportFragmentManager());
 		} else if (prevLevel == VpnStatus.ConnectionStatus.LEVEL_CONNECTING_SERVER_REPLIED) {

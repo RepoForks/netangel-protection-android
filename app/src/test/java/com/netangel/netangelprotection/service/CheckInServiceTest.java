@@ -123,7 +123,6 @@ public class CheckInServiceTest extends NetAngelRobolectricSuite {
         service.onHandleIntent(null);
 
         verify(service, times(1)).saveBoolean(Config.BATTERY_SAVER, true);
-        verify(service, times(1)).saveBoolean(Config.ENABLE_VPN, true);
         verify(service, times(1)).saveBoolean(Config.IS_VPN_ENABLED, true);
         verify(service, times(1)).saveBoolean(Config.PAUSE_VPN, true);
 
