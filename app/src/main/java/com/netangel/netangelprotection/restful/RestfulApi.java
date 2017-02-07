@@ -32,6 +32,7 @@ public class RestfulApi {
 	private static final String CLIENT_ID = "client_id";
 	private static final String NAME = "name";
 	private static final String DEVICE_TYPE = "device_type";
+	private static final String DEVICE_NAME = "device_name";
 	private static final String MODEL_NAME = "model_name";
 	private static final String MODEL_NUMBER = "model_number";
 	private static final String OS = "os";
@@ -84,7 +85,7 @@ public class RestfulApi {
 		HashMap<String, String> args = new HashMap<>();
 		args.put(CLIENT_ID, clientId);
 		args.put(NAME, Device.getName());
-		args.put(DEVICE_TYPE, "phone");
+		args.put(DEVICE_TYPE, Device.getDeviceType(context));
 		args.put(MODEL_NAME, Device.getName());
 		args.put(MODEL_NUMBER, Device.getModel());
 		args.put(OS, Device.getOS());

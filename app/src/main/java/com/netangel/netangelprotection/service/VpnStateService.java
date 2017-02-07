@@ -54,7 +54,7 @@ public class VpnStateService extends Service implements VpnStatus.StateListener 
         // by starting a background service as a foreground service, we are ensuring that
         // Android does not go in and wipe it out without us knowing.
         // https://developer.android.com/guide/components/services.html#Foreground
-        startForeground(R.string.connecting_to_vpn);
+        startForeground(R.string.connecting_to_vpn, true);
 
         // We want this service to attempt to continue running until it is explicitly stopped
         return START_STICKY;
@@ -80,19 +80,17 @@ public class VpnStateService extends Service implements VpnStatus.StateListener 
     public void updateState(String state, String logmessage, int localizedResId,
                             VpnStatus.ConnectionStatus level, VpnStatus.ConnectionStatus prevLevel) {
 
-        // TODO: Rework the logic here?
-        // Haven't tested enough yet, but do we really care about the previous level?
-        // Seems like we should really just care about the current state. This isn't really a
-        // state machine, that is handled for us in the StateListener, this is just reacting to changes.
-
-        if (prevLevel == VpnStatus.ConnectionStatus.LEVEL_CONNECTING_SERVER_REPLIED
-                && level == VpnStatus.ConnectionStatus.LEVEL_CONNECTED) {
+        if (level == VpnStatus.ConnectionStatus.LEVEL_WAITING_FOR_USER_INPUT ||
+                level == VpnStatus.ConnectionStatus.LEVEL_CONNECTING_NO_SERVER_REPLY_YET ||
+                level == VpnStatus.ConnectionStatus.LEVEL_CONNECTING_SERVER_REPLIED) {
+            startForeground(R.string.connecting_to_vpn, true);
+        } else if (level == VpnStatus.ConnectionStatus.LEVEL_CONNECTED) {
             protectionManager.setProtected(this, true);
-            startForeground(R.string.device_protected);
+            startForeground(R.string.device_protected, true);
         } else if (prevLevel == VpnStatus.ConnectionStatus.LEVEL_CONNECTED
                 && level == VpnStatus.ConnectionStatus.LEVEL_NOTCONNECTED) {
             protectionManager.setProtected(this, false);
-            startForeground(R.string.device_not_protected);
+            startForeground(R.string.device_not_protected, true);
 
             if (protectionManager.isDisconnectedByApp()) {
                 protectionManager.setDisconnectedByApp(false);
@@ -100,18 +98,18 @@ public class VpnStateService extends Service implements VpnStatus.StateListener 
                 restartVpnConnection();
             }
         } else if (level == VpnStatus.ConnectionStatus.LEVEL_NONETWORK) {
-            startForeground(R.string.failed_to_connect);
+            startForeground(R.string.failed_to_connect, true);
             protectionManager.setProtected(this, false);
         }
     }
 
     @VisibleForTesting
-    protected void startForeground(@StringRes int text) {
+    protected void startForeground(@StringRes int text, boolean hideNotification) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(getString(R.string.connection_status))
                 .setContentText(getString(text))
-                .setPriority(NotificationCompat.PRIORITY_MIN)
+                .setPriority(hideNotification ? NotificationCompat.PRIORITY_MIN : NotificationCompat.PRIORITY_HIGH)
                 .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                 .setWhen(0);
 
