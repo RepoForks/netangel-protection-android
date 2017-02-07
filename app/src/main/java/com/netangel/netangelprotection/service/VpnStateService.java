@@ -83,7 +83,7 @@ public class VpnStateService extends Service implements VpnStatus.StateListener 
         if (level == VpnStatus.ConnectionStatus.LEVEL_WAITING_FOR_USER_INPUT ||
                 level == VpnStatus.ConnectionStatus.LEVEL_CONNECTING_NO_SERVER_REPLY_YET ||
                 level == VpnStatus.ConnectionStatus.LEVEL_CONNECTING_SERVER_REPLIED) {
-            startForeground(R.string.connecting_to_vpn, false);
+            startForeground(R.string.connecting_to_vpn, true);
         } else if (level == VpnStatus.ConnectionStatus.LEVEL_CONNECTED) {
             protectionManager.setProtected(this, true);
             startForeground(R.string.device_protected, true);

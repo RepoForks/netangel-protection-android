@@ -135,7 +135,7 @@ public class VpnStateServiceTest extends NetAngelRobolectricSuite {
         VpnStatus.ConnectionStatus current = VpnStatus.ConnectionStatus.LEVEL_CONNECTING_SERVER_REPLIED;
 
         updateState(current, previous);
-        verify(service).startForeground(R.string.connecting_to_vpn, false);
+        verify(service).startForeground(R.string.connecting_to_vpn, true);
         verifyNoMoreInteractions(manager);
     }
 
