@@ -3,8 +3,9 @@
     <string name="error">Error</string>
     <string name="ok">OK</string>
     <string name="loading">Loading</string>
-    <string name="vpn_disabled">VPN connection is disabled</string>
-    <string name="check_internet_connection">Check Internet connection</string>
+    <string name="vpn_disabled">NetAngel connection is disabled</string>
+    <string name="check_internet_connection">No internet connection available</string>
+    <string name="device_type">phone</string>
 
     <!-- LoginActivity -->
     <string name="email">Email</string>
@@ -12,10 +13,10 @@
     <string name="sign_in">Sign in</string>
     <string name="dont_have_an_account">Don\'t have an account?</string>
     <string name="sign_up">Sign up</string>
-    <string name="enter_email_message">Please enter email</string>
-    <string name="enter_password_message">Please enter password</string>
+    <string name="enter_email_message">Please enter your email</string>
+    <string name="enter_password_message">Please enter your password</string>
     <string name="invalid_email_message">Invalid email</string>
-    <string name="password_length_message">Password has to be at least 8 characters</string>
+    <string name="password_length_message">Your password has to be at least 8 characters</string>
     <string name="login_failed_message">Login failed</string>
 
     <!-- MainActivity -->
@@ -23,14 +24,14 @@
     <string name="device_not_protected">Device is not protected</string>
     <string name="sign_out">Sign out</string>
     <string name="manage_this_device_at">Manage this device at:</string>
-    <string name="failed_to_connect">Failed to connect to VPN server</string>
     <string name="prevent_uninstall">Prevent Uninstall</string>
     <string name="allow_uninstall">Allow Uninstall</string>
+    <string name="failed_to_connect">Failed to connect to NetAngel</string>
 
     <!-- VpnStateService -->
     <string name="connection_status">Connection Status</string>
     <string name="connecting_to_vpn">Connecting to NetAngel…</string>
-
+  
     <!-- Device Admin -->
     <string name="device_admin">Device Administrator</string>
     <string name="device_admin_description">A notification will be sent, if the app is disabled.</string>

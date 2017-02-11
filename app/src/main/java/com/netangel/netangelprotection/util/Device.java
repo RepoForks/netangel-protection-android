@@ -1,12 +1,12 @@
 package com.netangel.netangelprotection.util;
 
+import android.content.Context;
 import android.os.Build;
+
+import com.netangel.netangelprotection.R;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * Created by DuyTran on 6/21/2016.
- */
 public final class Device {
 
 	private Device() {}
@@ -19,6 +19,10 @@ public final class Device {
 		} else {
 			return StringUtils.capitalize(manufacturer + " " + model);
 		}
+	}
+
+	public static String getDeviceType(Context context) {
+		return context.getString(R.string.device_type);
 	}
 
 	public static String getModel() {

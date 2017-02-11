@@ -12,7 +12,6 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.NetworkInfo.State;
-import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 
@@ -152,16 +151,8 @@ public class DeviceStateReceiver extends BroadcastReceiver implements ByteCountL
                     screen = connectState.DISCONNECTED;
 
                 mManagement.pause(getPauseReason());
-
-                WifiManager wifi = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-                wifi.setWifiEnabled(false);
-
             }
         } else if (Intent.ACTION_SCREEN_ON.equals(intent.getAction())) {
-
-            WifiManager wifi = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-            wifi.setWifiEnabled(true);
-
             // Network was disabled because screen off
             boolean connected = shouldBeConnected();
             screen = connectState.SHOULDBECONNECTED;
@@ -204,16 +195,6 @@ public class DeviceStateReceiver extends BroadcastReceiver implements ByteCountL
             String extrainfo = networkInfo.getExtraInfo();
             if (extrainfo == null)
                 extrainfo = "";
-
-			/*
-            if(networkInfo.getType()==android.net.ConnectivityManager.TYPE_WIFI) {
-				WifiManager wifiMgr = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-				WifiInfo wifiinfo = wifiMgr.getConnectionInfo();
-				extrainfo+=wifiinfo.getBSSID();
-
-				subtype += wifiinfo.getNetworkId();
-			}*/
-
 
             netstatestring = String.format("%2$s %4$s to %1$s %3$s", networkInfo.getTypeName(),
                     networkInfo.getDetailedState(), extrainfo, subtype);
