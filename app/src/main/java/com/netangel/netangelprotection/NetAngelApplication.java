@@ -24,7 +24,10 @@ public class NetAngelApplication extends Application {
 
         PRNGFixes.apply();
         VpnStatus.initLogCache(getCacheDir());
-        VpnStateService.start(this);
-        CheckInService.start(this);
+
+        if (Config.getBoolean(this, Config.IS_SWITCH_ON, false)) {
+            VpnStateService.start(this);
+            CheckInService.start(this);
+        }
     }
 }
