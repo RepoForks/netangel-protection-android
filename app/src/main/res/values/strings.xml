@@ -37,7 +37,7 @@
     <string name="device_admin_description">A notification will be sent, if the app is disabled.</string>
     <string name="enable">Enable</string>
     <string name="device_admin_dialog_message">By enabling NetAngel as a Device Administrator,
-        Android will be prevented the app from getting uninstalled. If the app is disabled as a Device
+        Android will prevent the app from being uninstalled. If the app is disabled as a Device
         Administrator, you will get a notification that the device may no longer be protected.</string>
 
 </resources>
