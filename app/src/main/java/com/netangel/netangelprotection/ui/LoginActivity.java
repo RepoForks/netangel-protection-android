@@ -161,7 +161,7 @@ public class LoginActivity extends AppCompatActivity implements VpnStatus.StateL
 				String email = edtEmail.getText().toString().trim();
 				String password = edtPassword.getText().toString().trim();
 				new LoginTask(this, email, password).execute();
-				progressDialog = ProgressDialog.show(this, "", getString(R.string.connecting_to_vpn), true);
+				progressDialog = ProgressDialog.show(this, "", getString(R.string.signing_in), true);
 			} else {
 				Snackbar.make(edtEmail, R.string.check_internet_connection, Snackbar.LENGTH_LONG).show();
 			}

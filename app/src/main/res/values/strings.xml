@@ -18,6 +18,7 @@
     <string name="invalid_email_message">Invalid email</string>
     <string name="password_length_message">Your password has to be at least 8 characters</string>
     <string name="login_failed_message">Login failed</string>
+    <string name="signing_in">Signing in to NetAngel…</string>
 
     <!-- MainActivity -->
     <string name="device_protected">Device is protected</string>
