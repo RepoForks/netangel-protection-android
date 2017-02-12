@@ -27,7 +27,6 @@ public class ProtectionManager {
 
     public void setProtected(Context context, boolean isProtected) {
         if (isProtected != isCurrentlyProtected(context)) {
-            saveCurrentlyProtected(context, isProtected);
             startTask(context, isProtected);
         }
     }
@@ -42,14 +41,8 @@ public class ProtectionManager {
 
     @VisibleForTesting
     protected boolean isCurrentlyProtected(Context context) {
-        return Config.getBoolean(context, Config.STATUS_PROTECTED, false);
+        return new VpnHelper(context).isVpnConnected();
     }
-
-    @VisibleForTesting
-    protected void saveCurrentlyProtected(Context context, boolean isProtected) {
-        Config.saveBoolean(context, Config.STATUS_PROTECTED, isProtected);
-    }
-
     @VisibleForTesting
     protected void startTask(Context context, boolean isProtected) {
         new SetProtectedTask(context, isProtected).execute();

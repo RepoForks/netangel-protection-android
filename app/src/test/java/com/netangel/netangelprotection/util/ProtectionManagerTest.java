@@ -25,7 +25,6 @@ public class ProtectionManagerTest extends NetAngelJunitSuite {
         // we want to remove all the Android specific behavior so that we can use straight Junit
         // tests. They are much faster than Robolectic.
         doReturn(false).when(manager).isCurrentlyProtected(context);
-        doNothing().when(manager).saveCurrentlyProtected(eq(context), anyBoolean());
         doNothing().when(manager).startTask(eq(context), anyBoolean());
     }
 
@@ -40,7 +39,6 @@ public class ProtectionManagerTest extends NetAngelJunitSuite {
 
         manager.setProtected(context, tryingToProtect);
 
-        verify(manager).saveCurrentlyProtected(context, tryingToProtect);
         verify(manager).startTask(context, tryingToProtect);
     }
 

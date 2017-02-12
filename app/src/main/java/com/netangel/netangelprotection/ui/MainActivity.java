@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 	ToggleButton protectToggle;
 
 	private OpenVPNService service;
+	private VpnHelper vpnHelper;
 	private ProtectionManager protectionManager;
 	private boolean ignoreUserLeaveHint;
 
@@ -105,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 		setContentView(R.layout.activity_main);
 		ButterKnife.bind(this);
 
+		vpnHelper = new VpnHelper(this);
 		protectionManager = ProtectionManager.getInstance();
 		VpnStatus.addStateListener(this);
 
@@ -116,8 +118,7 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 
 		if (savedInstanceState == null) {
 			boolean isSwitchOn = Config.getBoolean(this, Config.IS_VPN_ENABLED, false);
-			boolean isProtected = Config.getBoolean(this, Config.STATUS_PROTECTED, false);
-			if (isSwitchOn && !isProtected) {
+			if (isSwitchOn && !vpnHelper.isVpnConnected()) {
 				connectVpn();
 			}
 		}
@@ -160,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 
 	@OnClick(R.id.btn_sign_out)
 	public void onClickSignOut() {
-		new LogoutTask().execute();
+		new LogoutTask(this).execute();
 		LoginActivity.start(this);
 		finish();
 	}
@@ -173,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 	}
 
 	private void updateUI() {
-		boolean isProtected = Config.getBoolean(this, Config.STATUS_PROTECTED, false);
+		boolean isProtected = vpnHelper.isVpnConnected();
 		protectToggle.setChecked(isProtected);
 
 		if (isProtected) {
@@ -215,7 +216,8 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 	}
 
 	private void disconnectVpn() {
-		boolean isProtected = Config.getBoolean(this, Config.STATUS_PROTECTED, false);
+		boolean isProtected = vpnHelper.isVpnConnected();
+
 		if (isProtected) {
 			ProfileManager.setConntectedVpnProfileDisconnected(this);
 			if (service != null && service.getManagement() != null) {
