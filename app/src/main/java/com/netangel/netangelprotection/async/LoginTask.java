@@ -84,6 +84,7 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
 		} catch (Exception e) {
 			LogUtils.w(TAG, "Failed to login", e);
 		}
+
 		return false;
 	}
 
