@@ -66,6 +66,7 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
 			if (!importVpnProfile()) {
                 return false;
             }
+
 			Config.saveBoolean(context, Config.IS_VPN_PROFILE_IMPORTED, true);
 		}
 

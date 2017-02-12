@@ -161,9 +161,14 @@ public class MainActivity extends AppCompatActivity implements VpnStatus.StateLi
 
 	@OnClick(R.id.btn_sign_out)
 	public void onClickSignOut() {
-		new LogoutTask(this).execute();
 		LoginActivity.start(this);
 		finish();
+	}
+
+	@OnClick(R.id.btn_switch_accounts)
+	public void onClickSwitchAccounts() {
+		new LogoutTask(this).execute();
+		onClickSignOut();
 	}
 
 	@OnClick(R.id.txt_dashboard)

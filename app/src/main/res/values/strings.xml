@@ -23,6 +23,7 @@
     <string name="device_protected">Device is protected</string>
     <string name="device_not_protected">Device is not protected</string>
     <string name="sign_out">Sign out</string>
+    <string name="switch_accounts">Switch accounts</string>
     <string name="manage_this_device_at">Manage this device at:</string>
     <string name="failed_to_connect">Failed to connect to NetAngel</string>
 
